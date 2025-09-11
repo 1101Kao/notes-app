@@ -93,6 +93,35 @@
     font-family:"Meiryo UI",sans-serif; font-size:14px;
   }
   .modal-footer { text-align:right; }
+
+/* ===== レスポンシブ調整 ===== */
+
+/* スマホやタブレット（幅768px以下） */
+@media (max-width: 768px) {
+  body { font-size:16px; }
+  .note h3 { font-size:18px; }
+  .note p { font-size:16px; line-height:1.6; }
+
+  #dlg { width:95%; }  /* モーダルを画面にフィットさせる */
+  #dlg input, #dlg textarea, #dlg select { 
+    font-size:16px; 
+  }
+
+  .topbar-actions .btn {
+    padding:6px 8px;   /* ボタン小さめに */
+    margin-left:4px;
+  }
+}
+
+/* PC（幅769px以上） */
+@media (min-width: 769px) {
+  body { font-size:15px; }
+  .note h3 { font-size:16px; }
+  .note p { font-size:14px; line-height:1.5; }
+
+  #dlg { width:600px; }
+}
+
 </style>
 </head>
 <body class="light">
