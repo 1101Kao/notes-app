@@ -95,30 +95,37 @@
   .modal-footer { text-align:right; }
 
 /* ===== レスポンシブ調整 ===== */
+/* ===== レスポンシブ調整 強化版 ===== */
 
-/* スマホやタブレット（幅768px以下） */
-@media (max-width: 768px) {
-  body { font-size:16px; }
-  .note h3 { font-size:18px; }
-  .note p { font-size:16px; line-height:1.6; }
+/* スマホ（幅600px以下） */
+@media screen and (max-width: 600px) {
+  body { font-size:17px; }
 
-  #dlg { width:95%; }  /* モーダルを画面にフィットさせる */
-  #dlg input, #dlg textarea, #dlg select { 
-    font-size:16px; 
+  /* サイドバーを縮める */
+  .sidebar { width:140px; }
+  .main { margin-left:150px; }
+
+  /* モーダルを全幅に近づける */
+  #dlg { width:95% !important; left:2.5% !important; }
+
+  /* 入力欄もちゃんと収まるように */
+  #dlg input, #dlg textarea, #dlg select {
+    font-size:16px;
+    box-sizing:border-box;
   }
 
+  /* ボタン群を小さめ＆1行に */
   .topbar-actions .btn {
-    padding:6px 8px;   /* ボタン小さめに */
-    margin-left:4px;
+    padding:5px 6px;
+    font-size:12px;
   }
 }
 
-/* PC（幅769px以上） */
-@media (min-width: 769px) {
+/* タブレット〜PC（601px以上） */
+@media screen and (min-width: 601px) {
   body { font-size:15px; }
-  .note h3 { font-size:16px; }
-  .note p { font-size:14px; line-height:1.5; }
-
+  .sidebar { width:180px; }
+  .main { margin-left:200px; }
   #dlg { width:600px; }
 }
 
