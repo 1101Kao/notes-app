@@ -2,8 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>業務ノート</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notes</title>
 <style>
   /* ===== ベース ===== */
   body { font-family:"Meiryo UI","Hiragino Sans",Arial,sans-serif; margin:0; font-size:14px; }
@@ -12,10 +11,10 @@
 
   /* ヘッダー */
   .topbar { background:#4a90e2; color:#fff; padding:12px 16px; }
-  .topbar-inner { overflow:hidden; }
-  .topbar-title { float:left; font-weight:bold; }
-  .topbar-actions { float:right; }
-  .btn { padding:6px 12px; margin-left:6px; cursor:pointer; border:none; border-radius:6px; background:#ffffff; color:#2a3a50; font-size:14px; }
+  .topbar-inner { display:flex; justify-content:space-between; align-items:center; flex-wrap:nowrap; }
+  .topbar-title { font-weight:bold; white-space:nowrap; }
+  .topbar-actions { display:flex; flex-wrap:nowrap; gap:6px; }
+  .btn { padding:6px 10px; cursor:pointer; border:none; border-radius:6px; background:#ffffff; color:#2a3a50; font-size:13px; white-space:nowrap; }
   .btn:hover { opacity:.9; }
   body.dark .btn { background:#2a3140; color:#e8edf5; }
   .btn-primary { background:#4a90e2; color:#fff; }
@@ -25,19 +24,26 @@
   /* 情報/検索 */
   #infoPanel { display:none; font-size:12px; margin:8px 16px; color:#556; }
   #filterPanel { margin:8px 16px; }
-  #q { width:60%; padding:8px; border:1px solid #cfd8e3; border-radius:6px; }
+  #q { width:100%; padding:8px; border:1px solid #cfd8e3; border-radius:6px; box-sizing:border-box; }
   #q::placeholder { color:#999; font-style:italic; }
 
   /* ===== 2カラム ===== */
-  .container { overflow:hidden; zoom:1; display:flex; }
+  .container { display:flex; flex-wrap:nowrap; min-height:calc(100vh - 60px); }
   .sidebar {
-    width:180px; border-right:1px solid #d8e1eb; padding:14px;
+    flex:0 0 160px;
+    border-right:1px solid #d8e1eb;
+    padding:14px;
     background: linear-gradient(180deg,#ffffff,#f7f9fc);
+    box-sizing:border-box;
   }
   body.dark .sidebar { background:#1c1f28; border-color:#2a3140; }
   .sidebar h4 { margin:0 0 10px; font-size:13px; color:#6b7a90; }
   .sidebar ul { list-style:none; padding:0; margin:0; }
-  .sidebar li { cursor:pointer; margin:6px 0; padding:6px 10px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; }
+  .sidebar li {
+    cursor:pointer; margin:6px 0; padding:6px 10px;
+    border-radius:6px; display:flex; justify-content:space-between; align-items:center;
+    font-size:13px;
+  }
   .sidebar li.active { background:#4a90e2; color:#fff; }
   .sidebar .del-btn {
     font-size: 13px;
@@ -47,58 +53,46 @@
     opacity: 0.6;
     transition: color 0.2s, opacity 0.2s;
   }
-  .sidebar .del-btn:hover {
-    color: #e24a4a;
-    opacity: 1;
-  }
+  .sidebar .del-btn:hover { color: #e24a4a; opacity: 1; }
 
-  .main { flex:1; padding:18px; }
+  .main { flex:1; padding:18px; min-width:0; }
 
   /* ===== ノートカード ===== */
   .note {
-    border:1px solid #e3e8ef; background:#fff; border-radius:10px; padding:12px; margin-bottom:12px; cursor:pointer;
+    border:1px solid #e3e8ef; background:#fff; border-radius:10px;
+    padding:12px; margin-bottom:12px; cursor:pointer;
     box-shadow:0 2px 6px rgba(0,0,0,.06);
+    word-break:break-word;
   }
-  .note h3 { margin:0 0 4px; font-size:16px; }
+  .note h3 { margin:0 0 4px; font-size:15px; }
   .note small { color:#6b7a90; }
-  body.dark .note { background:#141925; border-color:#2a3140; color:#e8edf5; box-shadow:0 2px 8px rgba(0,0,0,.25); }
-
-  /* 選択チェック */
-  .note input[type="checkbox"] { margin-right:8px; }
+  body.dark .note {
+    background:#141925; border-color:#2a3140; color:#e8edf5;
+    box-shadow:0 2px 8px rgba(0,0,0,.25);
+  }
 
   /* ===== モーダル ===== */
   #dlg {
     display:none; position:absolute;
     width:600px; max-width:95%;
-    background:#fff; color:#2a3a50; border:1px solid #d0d7e2; border-radius:10px;
+    background:#fff; color:#2a3a50;
+    border:1px solid #d0d7e2; border-radius:10px;
     box-shadow:0 16px 32px rgba(0,0,0,.3); z-index:1000;
   }
   body.dark #dlg { background:#141925; color:#e8edf5; border-color:#2a3140; }
   #dlgHeader {
-    padding:10px 14px; background:#4a90e2; color:#fff; border-radius:10px 10px 0 0;
-    cursor:move; user-select:none;
-    font-weight:bold;
+    padding:10px 14px; background:#4a90e2; color:#fff;
+    border-radius:10px 10px 0 0;
+    cursor:move; user-select:none; font-weight:bold; font-size:14px;
   }
   #dlg .content { padding:20px; }
   #dlg input, #dlg textarea, #dlg select {
-    width:100%; margin-bottom:10px; padding:8px; border:1px solid #cfd8e3; border-radius:6px; font-size:14px;
+    width:100%; max-width:100%; box-sizing:border-box;
+    margin-bottom:10px; padding:8px;
+    border:1px solid #cfd8e3; border-radius:6px;
+    font-family:"Meiryo UI",sans-serif; font-size:14px;
   }
-  #dlg textarea { white-space:pre-wrap; }
   .modal-footer { text-align:right; }
-
-  /* ===== スマホ対応 ===== */
-  @media (max-width: 600px) {
-    #dlg {
-      width:95% !important;
-      left:2.5% !important;
-      top:20px !important;
-    }
-    #dlg .content { padding:14px; }
-    #dlg input, #dlg textarea, #dlg select { font-size:16px; }
-    .container { flex-direction:column; }
-    .sidebar { width:100%; border-right:none; border-bottom:1px solid #d8e1eb; }
-    .main { margin-left:0; }
-  }
 </style>
 </head>
 <body class="light">
@@ -109,18 +103,18 @@
     <div class="topbar-title">業務ノート</div>
     <div class="topbar-actions">
       <button class="btn" onclick="toggleInfo()">info</button>
-      <button class="btn" onclick="toggleTheme()">テーマ</button>
-      <button class="btn" onclick="exportNotes()">エクスポート</button>
+      <button class="btn" onclick="toggleTheme()">tm</button>
+      <button class="btn" onclick="exportNotes()">ex</button>
       <input type="file" id="importFile" style="display:none" onchange="importNotes(event)">
-      <button class="btn" onclick="document.getElementById('importFile').click()">インポート</button>
-      <button class="btn btn-danger" onclick="deleteSelected()">選択削除</button>
+      <button class="btn" onclick="document.getElementById('importFile').click()">in</button>
+      <button class="btn btn-danger" onclick="deleteSelected()">del</button>
       <button class="btn btn-primary" onclick="openEditor(null)">新規</button>
     </div>
   </div>
 </div>
 
 <!-- 情報＆検索 -->
-<div id="infoPanel">右上の　新規　をクリックすると新しいメモを作成します。</div>
+<div id="infoPanel">右上の「新規」をクリックすると新しいメモを作成できます。</div>
 <div id="filterPanel"><input type="text" id="q" placeholder="検索したいワード" onkeyup="render()"></div>
 
 <!-- ===== 2カラム ===== -->
@@ -159,121 +153,142 @@ var current = null;
 var categories = [];
 var theme = (function(){ try{ return localStorage.getItem("theme") || "light"; }catch(e){ return "light"; } })();
 var currentCategory = "all";
+var selectedIds = new Set();
 
-/* ===== ストレージユーティリティ ===== */
+/* ===== ストレージ ===== */
 function storageGet(key){ try { return localStorage.getItem(key); } catch(e){ return null; } }
 function storageSet(key,val){ try { localStorage.setItem(key,val); } catch(e){} }
 
-/* ===== ノート保存/読込 ===== */
-function loadNotes(){ var d=storageGet("notes"); if(d){ try{notes=JSON.parse(d)||[];}catch(e){notes=[];} } }
+/* ===== ノート ===== */
+function loadNotes(){ var d=storageGet("notes"); if(d){ try{ notes=JSON.parse(d)||[] }catch(e){ notes=[] } } }
 function saveNotes(){ storageSet("notes", JSON.stringify(notes)); }
 
-/* ===== カテゴリ保存/読込 ===== */
-function loadCategories(){
-  var d=storageGet("categories");
-  if(d){ try{categories=JSON.parse(d)||["daily","weekly","kb"];}catch(e){categories=["daily","weekly","kb"];} }
-  else{ categories=["daily","weekly","kb"]; }
-}
+/* ===== カテゴリ ===== */
+function loadCategories(){ var d=storageGet("categories"); if(d){ try{ categories=JSON.parse(d)||["daily","weekly","kb"]; }catch(e){ categories=["daily","weekly","kb"]; } } else { categories=["daily","weekly","kb"]; } }
 function saveCategories(){ storageSet("categories", JSON.stringify(categories)); }
 
 /* ===== レンダリング ===== */
 function render(){
-  var list=document.getElementById('list'); list.innerHTML='';
+  var list=document.getElementById('list');
+  list.innerHTML='';
   var q=(document.getElementById('q').value||'').toLowerCase();
-  for(var i=0;i<notes.length;i++){
-    var n=notes[i];
-    if(currentCategory!=="all" && n.cat!==currentCategory) continue;
+  notes.forEach(n=>{
+    if(currentCategory!=="all"&&n.cat!==currentCategory) return;
     var t=(n.title||"").toLowerCase();
     var body=(n.notes||"").toLowerCase();
-    if(q && t.indexOf(q)===-1 && body.indexOf(q)===-1) continue;
+    if(q&&t.indexOf(q)===-1&&body.indexOf(q)===-1) return;
     var div=document.createElement('div');
     div.className='note';
-    div.innerHTML='<input type="checkbox" data-id="'+n.id+'">'+
+    div.innerHTML=
+      '<input type="checkbox" onclick="toggleSelect('+n.id+',this)" '+(selectedIds.has(n.id)?'checked':'')+'> '+
       '<h3>'+escapeHtml(n.title||"(無題)")+'</h3>'+
       '<small>'+escapeHtml(n.date)+'（'+escapeHtml(n.cat)+ '）</small>'+
-      '<p>'+escapeHtml(n.notes||"")+'</p>';
-    div.onclick=function(e){ if(e.target.tagName!=="INPUT"){ openEditorById(n.id); } };
+      '<p>'+escapeHtml(n.notes||"").replace(/\n/g,"<br>")+'</p>';
+    div.onclick=function(e){ if(e.target.tagName!=="INPUT") openEditorById(n.id); };
     list.appendChild(div);
-  }
+  });
   renderCategories();
 }
 function renderCategories(){
   var list=document.getElementById("catList"); list.innerHTML="";
-  var allLi=document.createElement("li"); allLi.textContent="すべて";
-  allLi.className=(currentCategory==="all")?"active":""; allLi.onclick=function(){setCategory("all");};
+  var allLi=document.createElement("li");
+  allLi.textContent="すべて";
+  allLi.className=(currentCategory==="all")?"active":"";
+  allLi.onclick=function(){ setCategory("all"); };
   list.appendChild(allLi);
   categories.forEach(cat=>{
-    var li=document.createElement("li"); li.textContent=cat;
+    var li=document.createElement("li");
+    li.textContent=cat;
     if(cat===currentCategory) li.classList.add("active");
     li.onclick=function(){ setCategory(cat); };
-    var del=document.createElement("span"); del.textContent="×"; del.className="del-btn";
-    del.onclick=function(e){ e.stopPropagation(); if(confirm(cat+" を削除しますか？")){ categories=categories.filter(c=>c!==cat); saveCategories(); renderCategories(); } };
+    var del=document.createElement("span");
+    del.textContent="×"; del.className="del-btn";
+    del.onclick=function(e){
+      e.stopPropagation();
+      if(confirm(cat+" を削除しますか？")){
+        categories=categories.filter(c=>c!==cat);
+        saveCategories(); renderCategories();
+      }
+    };
     li.appendChild(del); list.appendChild(li);
   });
   var sel=document.getElementById("fCat"); sel.innerHTML="";
-  categories.forEach(cat=>{ var opt=document.createElement("option"); opt.value=cat; opt.textContent=cat; sel.appendChild(opt); });
+  categories.forEach(cat=>{
+    var opt=document.createElement("option");
+    opt.value=cat; opt.textContent=cat; sel.appendChild(opt);
+  });
 }
-function escapeHtml(s){ s=s||""; return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function escapeHtml(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+/* ===== 選択削除 ===== */
+function toggleSelect(id,cb){ if(cb.checked) selectedIds.add(id); else selectedIds.delete(id); }
+function deleteSelected(){
+  if(selectedIds.size===0){ alert("削除するノートを選択してください"); return; }
+  if(confirm("選択したノートを削除しますか？")){
+    notes=notes.filter(n=>!selectedIds.has(n.id));
+    selectedIds.clear();
+    saveNotes(); render();
+  }
+}
 
 /* ===== カテゴリ操作 ===== */
 function setCategory(cat){ currentCategory=cat; render(); }
 function addCategory(){
-  var val=document.getElementById("newCat").value.trim(); if(!val) return;
+  var val=document.getElementById("newCat").value.trim();
+  if(!val) return;
   if(categories.indexOf(val)!==-1){ alert("既に存在します"); return; }
-  categories.push(val); saveCategories(); renderCategories(); document.getElementById("newCat").value="";
+  categories.push(val); saveCategories(); renderCategories();
+  document.getElementById("newCat").value="";
 }
 
 /* ===== エディタ ===== */
+function todayStr(){ var d=new Date(); var m=("0"+(d.getMonth()+1)).slice(-2); var dd=("0"+d.getDate()).slice(-2); return d.getFullYear()+"-"+m+"-"+dd; }
 function openEditor(n){
-  current=n||{id:new Date().getTime(), date:todayStr(), cat:categories[0]||"daily", title:'', notes:''};
+  current=n||{ id:new Date().getTime(), date:todayStr(), cat:categories[0]||"daily", title:'', notes:'' };
   document.getElementById('fDate').value=current.date;
   document.getElementById('fCat').value=current.cat;
   document.getElementById('fTitle').value=current.title;
   document.getElementById('fNotes').value=current.notes;
-  var dlg=document.getElementById('dlg'); dlg.style.display='block'; centerDialog();
+  var dlg=document.getElementById('dlg');
+  dlg.style.display='block'; centerDialog();
 }
-function openEditorById(id){ for(var i=0;i<notes.length;i++){ if(notes[i].id===id){ openEditor(notes[i]); return; } } }
+function openEditorById(id){ var n=notes.find(x=>x.id===id); if(n) openEditor(n); }
 function closeEditor(){ document.getElementById('dlg').style.display='none'; }
 function saveNote(){
   current.date=document.getElementById('fDate').value;
   current.cat=document.getElementById('fCat').value;
   current.title=document.getElementById('fTitle').value;
   current.notes=document.getElementById('fNotes').value;
-  var idx=-1; for(var i=0;i<notes.length;i++){ if(notes[i].id===current.id){ idx=i; break; } }
+  var idx=notes.findIndex(x=>x.id===current.id);
   if(idx>=0) notes[idx]=current; else notes.unshift(current);
   saveNotes(); render(); closeEditor();
 }
 function deleteNote(){
   if(!current) return;
-  if(confirm("削除しますか？")){ notes=notes.filter(n=>n.id!==current.id); saveNotes(); render(); closeEditor(); }
-}
-
-/* ===== 選択削除 ===== */
-function deleteSelected(){
-  var checks=document.querySelectorAll('.note input[type="checkbox"]:checked');
-  if(checks.length===0){ alert("削除するノートを選択してください"); return; }
-  if(!confirm(checks.length+"件を削除しますか？")) return;
-  var ids=[...checks].map(c=>parseInt(c.dataset.id));
-  notes=notes.filter(n=>!ids.includes(n.id));
-  saveNotes(); render();
+  if(confirm("削除しますか？")){
+    notes=notes.filter(n=>n.id!==current.id);
+    saveNotes(); render(); closeEditor();
+  }
 }
 
 /* ===== Ex/Import ===== */
 function exportNotes(){
-  var data=JSON.stringify(notes,null,2); var blob=new Blob([data],{type:"application/json"}); var url=URL.createObjectURL(blob);
-  var a=document.createElement("a"); var now=new Date(); var yyyy=now.getFullYear(); var mm=("0"+(now.getMonth()+1)).slice(-2); var dd=("0"+now.getDate()).slice(-2);
-  a.href=url; a.download="notes-"+yyyy+"-"+mm+"-"+dd+".json"; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  var data=JSON.stringify(notes,null,2);
+  var blob=new Blob([data],{type:"application/json"});
+  var url=URL.createObjectURL(blob); var a=document.createElement("a");
+  var now=new Date(); var yyyy=now.getFullYear(); var mm=("0"+(now.getMonth()+1)).slice(-2); var dd=("0"+now.getDate()).slice(-2);
+  a.href=url; a.download="notes-"+yyyy+"-"+mm+"-"+dd+".json";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
 }
 function importNotes(e){
-  var file=e.target.files[0]; if(!file) return; var reader=new FileReader();
+  var file=e.target.files[0]; if(!file) return;
+  var reader=new FileReader();
   reader.onload=function(evt){
     try{
       var imported=JSON.parse(evt.target.result);
-      if(imported && imported.length){
-        var ans=confirm("既存のノートに追加しますか？\nOK=追加 / キャンセル=上書き\n(×でキャンセル)");
-        if(ans===true){ notes=notes.concat(imported); }
-        else if(ans===false){ notes=imported; }
-        else{ return; }
+      if(imported&&imported.length){
+        var mode=confirm("既存に追加しますか？（キャンセル=上書き）");
+        notes=mode?notes.concat(imported):imported;
         saveNotes(); render(); alert("インポート完了！");
       }
     }catch(err){ alert("インポート失敗: "+err.message); }
@@ -285,23 +300,20 @@ function importNotes(e){
 function toggleInfo(){ var p=document.getElementById('infoPanel'); p.style.display=(p.style.display==='block')?'none':'block'; }
 function toggleTheme(){ theme=(theme==="light")?"dark":"light"; document.body.className=theme; storageSet("theme",theme); }
 
-/* ===== ユーティリティ ===== */
-function todayStr(){ var d=new Date(); var m=("0"+(d.getMonth()+1)).slice(-2); var dd=("0"+d.getDate()).slice(-2); return d.getFullYear()+"-"+m+"-"+dd; }
-
 /* ===== 初期化 ===== */
 function init(){ document.body.className=theme; loadNotes(); loadCategories(); render(); }
 init();
 
-/* ===== モーダルをドラッグで動かす ===== */
+/* ===== モーダルドラッグ ===== */
 (function(){
   var dlg=document.getElementById("dlg"); var header=document.getElementById("dlgHeader");
   var startX=0,startY=0,startLeft=0,startTop=0,dragging=false;
   function getClientWidth(){ return document.documentElement.clientWidth||document.body.clientWidth; }
   function getScrollTop(){ return document.documentElement.scrollTop||document.body.scrollTop; }
-  function centerDialog(){ var w=getClientWidth(); var dw=dlg.offsetWidth||520; var left=Math.max(10,Math.floor((w-dw)/2)); var top=getScrollTop()+80; dlg.style.left=left+"px"; dlg.style.top=top+"px"; }
+  function centerDialog(){ var w=getClientWidth(); var dw=dlg.offsetWidth||520; var left=Math.max(10,Math.floor((w-dw)/2)); var top=getScrollTop()+40; dlg.style.left=left+"px"; dlg.style.top=top+"px"; }
   window.centerDialog=centerDialog;
   header.onmousedown=function(e){ dragging=true; startX=e.clientX; startY=e.clientY; startLeft=dlg.offsetLeft; startTop=dlg.offsetTop;
-    document.onmousemove=function(e2){ if(!dragging) return; var dx=e2.clientX-startX; var dy=e2.clientY-startY; dlg.style.left=(startLeft+dx)+"px"; dlg.style.top=(startTop+dy)+"px"; };
+    document.onmousemove=function(e2){ if(!dragging)return; var dx=e2.clientX-startX; var dy=e2.clientY-startY; dlg.style.left=(startLeft+dx)+"px"; dlg.style.top=(startTop+dy)+"px"; };
     document.onmouseup=function(){ dragging=false; document.onmousemove=null; document.onmouseup=null; };
   };
   window.onresize=function(){ if(dlg.style.display==='block'&&!dragging){ centerDialog(); } };
