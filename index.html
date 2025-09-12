@@ -118,13 +118,95 @@
   .editor-content input, .editor-content textarea, .editor-content select {
     width:100%; margin-bottom:10px; padding:8px; border:1px solid #ccc; border-radius:6px;
   }
+
+/* ===== モバイルレイアウト調整 ===== */
+@media screen and (max-width:600px) {
+  /* サイドバーをスライドインに */
+  .sidebar {
+    position: fixed;
+    left: -100%;
+    top: 0; bottom: 0;
+    width: 80%;
+    max-width: 280px;
+    background: #fff;
+    transition: left 0.3s ease;
+    z-index: 2500;
+    box-shadow: 2px 0 8px rgba(0,0,0,.2);
+  }
+  .sidebar.show { left: 0; }
+
+  /* トップバーに≡ボタン */
+  .menu-toggle {
+    display:inline-block;
+    font-size:20px;
+    margin-right:10px;
+    cursor:pointer;
+  }
+
+  /* ノートリストをAppleメモ風に */
+  .note {
+    border: none;
+    border-bottom: 1px solid #ddd;
+    border-radius: 0;
+    padding: 12px;
+    box-shadow: none;
+    background: transparent;
+  }
+  .note h3 { 
+    font-size: 16px; 
+    margin: 0 0 4px; 
+    font-weight: bold;
+  }
+  .note small { 
+    display: block; 
+    color: #888; 
+    margin-bottom: 4px; 
+  }
+  .note p { 
+    font-size: 13px; 
+    color:#444; 
+    overflow:hidden; 
+    white-space:nowrap; 
+    text-overflow:ellipsis; 
+    margin:0;
+  }
+
+  /* 右下の新規ボタン */
+  .fab {
+    position: fixed; 
+    bottom:16px; 
+    right:16px;
+    width:48px; height:48px; 
+    border-radius:50%;
+    background:#ffd400; 
+    color:black;
+    font-size:24px; 
+    font-weight:bold;
+    display:flex; 
+    align-items:center; 
+    justify-content:center;
+    box-shadow:0 2px 6px rgba(0,0,0,.3);
+    z-index:2600;
+    border:none;
+    cursor:pointer;
+  }
+
+  /* モバイル用エディタ幅調整 */
+  .mobile-editor {
+    width:100% !important;
+    max-width:100% !important;
+  }
+}
+
 </style>
 </head>
 <body class="light">
 <!-- ===== Topbar ===== -->
 <div class="topbar">
   <div class="topbar-inner">
-    <div class="topbar-title">Notes</div>
+    <div class="topbar-title">
+  <span class="menu-toggle" onclick="toggleSidebar()">≡</span>Notes
+</div>
     <div class="topbar-actions">
       <button class="btn" onclick="toggleInfo()">info</button>
       <button class="btn" onclick="toggleTheme()">tm</button>
@@ -185,6 +267,8 @@
     <textarea id="mNotes" placeholder="本文" rows="8"></textarea>
   </div>
 </div>
+<!-- モバイル新規ボタン -->
+<button class="fab" onclick="openMobileEditor()">＋</button>
 <script>
 var notes=[],current=null,categories=[],theme=(function(){try{return localStorage.getItem("theme")||"light";}catch(e){return"light";}})(),currentCategory="all",selectedIds=new Set();
 
@@ -349,6 +433,25 @@ function debugCheck() {
   }
 }
 
+function toggleSidebar(){
+  document.querySelector('.sidebar').classList.toggle('show');
+}
+
+// モバイル新規作成時は横幅100%のエディタを使う
+function openMobileEditor(){
+  const me = document.getElementById("mobileEditor");
+  if(me){
+    me.classList.add("show");
+    // 初期化（空白ノートをセット）
+    document.getElementById("mDate").value = todayStr();
+    document.getElementById("mCat").value = categories[0] || "daily";
+    document.getElementById("mTitle").value = "";
+    document.getElementById("mNotes").value = "";
+  }
+}
+function closeMobileEditor(){
+  document.getElementById("mobileEditor").classList.remove("show");
+}
 
 </script>
 </body>
