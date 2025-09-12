@@ -132,7 +132,7 @@
       <input type="file" id="importFile" style="display:none" onchange="importNotes(event)">
       <button class="btn" onclick="document.getElementById('importFile').click()">in</button>
       <button class="btn btn-danger" onclick="deleteSelected()">del</button>
-      <button class="btn btn-primary" onclick="openEditor(null)">新規</button>
+      <button class="btn btn-primary" onclick="openEditor(null); debugCheck()">新規</button>
     </div>
   </div>
 </div>
@@ -339,6 +339,17 @@ init();
   };
   window.onresize=function(){ if(dlg.style.display==='block' && !dragging){ centerDialog(); } };
 })();
+
+function debugCheck() {
+  var el = document.getElementById("mobileEditor");
+  if (!el) {
+    alert("mobileEditor が見つからない");
+  } else {
+    alert("class: " + el.className);
+  }
+}
+
+
 </script>
 </body>
 </html>
