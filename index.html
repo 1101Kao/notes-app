@@ -9,76 +9,112 @@
   body.light { background:#f0f4f8; color:#2a3a50; }
   body.dark  { background:#0f1115; color:#e8edf5; }
 
-  /* ヘッダー */
-  .topbar { background:#4a90e2; color:#fff; padding:8px 12px; position:sticky; top:0; z-index:2000; }
+  /* ===== ヘッダー ===== */
+  .topbar {
+    background:#4a90e2; color:#fff; padding:8px 12px;
+    position:sticky; top:0; z-index:2000;
+  }
   .topbar-inner { display:flex; justify-content:space-between; align-items:center; }
   .topbar-title { font-weight:bold; }
-  .topbar-actions { display:flex; gap:4px; overflow-x:auto; }
-  .btn { padding:4px 8px; cursor:pointer; border:none; border-radius:6px; background:#ffffff; color:#2a3a50; font-size:12px; white-space:nowrap; font-family:"Meiryo UI",sans-serif; }
+  .topbar-actions {
+    display:flex; flex-wrap:nowrap; gap:4px; overflow-x:auto;
+  }
+  .btn {
+    padding:4px 8px; cursor:pointer; border:none;
+    border-radius:6px; background:#ffffff; color:#2a3a50;
+    font-size:12px; white-space:nowrap; font-family:"Meiryo UI",sans-serif;
+  }
   .btn:hover { opacity:.9; }
   body.dark .btn { background:#2a3140; color:#e8edf5; }
   .btn-primary { background:#4a90e2; color:#fff; }
   .btn-danger  { background:#e24a4a; color:#fff; }
   .btn-cancel  { background:#fff; border:1px solid #999; color:#333; }
+  .menu-toggle { display:none; } /* スマホのみ表示 */
 
-  /* ハンバーガーメニュー */
-  .hamburger { display:none; font-size:20px; cursor:pointer; margin-right:8px; }
-
-  /* 情報/検索 */
+  /* ===== 情報/検索 ===== */
   #infoPanel { display:none; font-size:12px; margin:8px 16px; color:#556; }
   #filterPanel { margin:8px 16px; }
-  #q { width:100%; padding:6px; border:1px solid #cfd8e3; border-radius:6px; font-size:13px; font-family:"Meiryo UI",sans-serif; }
+  #q {
+    width:60%; padding:6px; border:1px solid #cfd8e3; border-radius:6px;
+    font-size:13px; font-family:"Meiryo UI",sans-serif;
+  }
   #q::placeholder { color:#999; font-style:italic; }
 
-  /* ===== 2カラム ===== */
+  /* ===== レイアウト ===== */
   .container { display:flex; }
   .sidebar {
     width:200px; border-right:1px solid #d8e1eb; padding:14px;
-    background: linear-gradient(180deg,#ffffff,#f7f9fc); transition: transform 0.3s ease;
+    background: linear-gradient(180deg,#ffffff,#f7f9fc);
   }
   body.dark .sidebar { background:#1c1f28; border-color:#2a3140; }
   .sidebar h4 { margin:0 0 10px; font-size:13px; color:#6b7a90; }
   .sidebar ul { list-style:none; padding:0; margin:0; }
-  .sidebar li { cursor:pointer; margin:6px 0; padding:6px 8px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; font-size:13px; }
+  .sidebar li {
+    cursor:pointer; margin:6px 0; padding:6px 8px; border-radius:6px;
+    display:flex; justify-content:space-between; align-items:center; font-size:13px;
+  }
   .sidebar li.active { background:#4a90e2; color:#fff; }
-  .sidebar .del-btn, .sidebar .edit-btn { font-size:12px; margin-left:6px; cursor:pointer; opacity:0.6; }
+  .sidebar .del-btn, .sidebar .edit-btn {
+    font-size: 12px; margin-left:6px; cursor:pointer; opacity:0.6;
+  }
   .sidebar .del-btn:hover { color:#e24a4a; opacity:1; }
   .sidebar .edit-btn:hover { color:#4a90e2; opacity:1; }
   .cat-input { display:flex; gap:4px; margin-top:8px; }
   .cat-input input { flex:1; padding:4px; font-size:12px; font-family:"Meiryo UI",sans-serif; }
   .cat-input button { flex:0 0 auto; padding:4px 6px; font-size:12px; }
 
-  .main { flex:1; padding:12px; }
+  .main { flex:1; padding:18px; }
 
   /* ===== ノートカード ===== */
-  .note { border:1px solid #e3e8ef; background:#fff; border-radius:10px; padding:10px; margin-bottom:10px; cursor:pointer;
-          box-shadow:0 2px 6px rgba(0,0,0,.06); font-size:13px; white-space:pre-wrap; word-wrap:break-word;
-          display:flex; flex-direction:column; gap:4px; font-family:"Meiryo UI",sans-serif; }
+  .note {
+    border:1px solid #e3e8ef; background:#fff; border-radius:10px;
+    padding:12px; margin-bottom:12px; cursor:pointer;
+    box-shadow:0 2px 6px rgba(0,0,0,.06);
+    font-size:13px; white-space:pre-wrap; word-wrap:break-word;
+    display:flex; flex-direction:column; gap:4px;
+    font-family:"Meiryo UI",sans-serif;
+  }
   .note-header { display:flex; align-items:center; gap:6px; }
   .note h3 { margin:0; font-size:15px; flex:1; }
   .note small { color:#6b7a90; font-size:12px; }
-  body.dark .note { background:#141925; border-color:#2a3140; color:#e8edf5; box-shadow:0 2px 8px rgba(0,0,0,.25); }
+  body.dark .note {
+    background:#141925; border-color:#2a3140; color:#e8edf5;
+    box-shadow:0 2px 8px rgba(0,0,0,.25);
+  }
 
   /* ===== モーダル ===== */
-  #dlg { display:none; position:absolute; width:600px; max-width:95%; background:#fff; color:#2a3a50;
-         border:1px solid #d0d7e2; border-radius:10px; box-shadow:0 16px 32px rgba(0,0,0,.3);
-         z-index:1000; font-size:13px; font-family:"Meiryo UI",sans-serif; }
+  #dlg {
+    display:none; position:absolute;
+    width:600px; max-width:95%;
+    background:#fff; color:#2a3a50;
+    border:1px solid #d0d7e2; border-radius:10px;
+    box-shadow:0 16px 32px rgba(0,0,0,.3);
+    z-index:1000; font-size:13px; font-family:"Meiryo UI",sans-serif;
+  }
   body.dark #dlg { background:#141925; color:#e8edf5; border-color:#2a3140; }
-  #dlgHeader { padding:10px 14px; background:#4a90e2; color:#fff; border-radius:10px 10px 0 0;
-               cursor:move; user-select:none; font-weight:bold; }
+  #dlgHeader {
+    padding:10px 14px; background:#4a90e2; color:#fff;
+    border-radius:10px 10px 0 0; cursor:move; user-select:none;
+    font-weight:bold; font-family:"Meiryo UI",sans-serif;
+  }
   #dlg .content { padding:20px; }
   #dlg input, #dlg textarea, #dlg select {
-    width:100%; margin-bottom:10px; padding:8px; border:1px solid #cfd8e3; border-radius:6px; font-size:13px;
+    width:100%; margin-bottom:10px; padding:8px;
+    border:1px solid #cfd8e3; border-radius:6px;
+    font-size:13px; font-family:"Meiryo UI",sans-serif;
   }
   .modal-footer { text-align:right; }
 
   /* ===== スマホ用 ===== */
-  @media (max-width: 768px) {
-    .sidebar { position:fixed; top:0; left:0; height:100%; transform:translateX(-100%); z-index:3000; }
-    .sidebar.open { transform:translateX(0); }
-    .hamburger { display:block; }
-    .main { padding:8px; }
-    .topbar-title { display:flex; align-items:center; }
+  @media (max-width:768px){
+    .container { flex-direction:column; }
+    .sidebar {
+      position: fixed; left: -240px; top: 0; height: 100%; width: 240px;
+      transition: left 0.3s; z-index:3000;
+    }
+    .sidebar.open { left: 0; }
+    .menu-toggle { display:inline-block; background:#4a90e2; color:#fff; }
+    .topbar-actions { display:none; } /* スマホでは隠す → sidebarに統合 */
   }
 </style>
 </head>
@@ -87,9 +123,8 @@
 <!-- ===== Topbar ===== -->
 <div class="topbar">
   <div class="topbar-inner">
-    <div class="topbar-title">
-      <span class="hamburger" onclick="toggleSidebar()">≡</span>Notes
-    </div>
+    <button class="btn menu-toggle" onclick="toggleSidebar()">≡</button>
+    <div class="topbar-title">Notes</div>
     <div class="topbar-actions">
       <button class="btn" onclick="toggleInfo()">info</button>
       <button class="btn" onclick="toggleTheme()">tm</button>
@@ -97,18 +132,27 @@
       <input type="file" id="importFile" style="display:none" onchange="importNotes(event)">
       <button class="btn" onclick="document.getElementById('importFile').click()">in</button>
       <button class="btn btn-danger" onclick="deleteSelected()">del</button>
-      <button class="btn btn-primary" onclick="openEditor(null)">＋</button>
+      <button class="btn btn-primary" onclick="openEditor(null)">新規</button>
     </div>
   </div>
 </div>
 
 <!-- 情報＆検索 -->
-<div id="infoPanel">右上の「＋」でノート作成できます。チェックして「del」で一括削除。</div>
+<div id="infoPanel">右上の「新規」でノート作成できます。チェックをつけて「del」で一括削除できます。</div>
 <div id="filterPanel"><input type="text" id="q" placeholder="検索したいワード" onkeyup="render()"></div>
 
 <!-- ===== 2カラム ===== -->
 <div class="container">
   <div class="sidebar" id="sidebar">
+    <h4>メニュー</h4>
+    <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;">
+      <button class="btn" onclick="toggleInfo()">info</button>
+      <button class="btn" onclick="toggleTheme()">tm</button>
+      <button class="btn" onclick="exportNotes()">ex</button>
+      <button class="btn" onclick="document.getElementById('importFile').click()">in</button>
+      <button class="btn btn-danger" onclick="deleteSelected()">del</button>
+      <button class="btn btn-primary" onclick="openEditor(null)">新規</button>
+    </div>
     <h4>カテゴリ</h4>
     <ul id="catList"></ul>
     <div class="cat-input">
@@ -138,10 +182,8 @@
 </div>
 
 <script>
+/* ===== 状態 ===== */
 var notes=[],current=null,categories=[],theme=(function(){try{return localStorage.getItem("theme")||"light";}catch(e){return"light";}})(),currentCategory="all",selectedIds=new Set();
-
-/* ===== Sidebar Toggle (スマホ用) ===== */
-function toggleSidebar(){ document.getElementById("sidebar").classList.toggle("open"); }
 
 /* ===== ストレージ ===== */
 function storageGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
@@ -178,13 +220,13 @@ function renderCategories(){
   categories.sort((a,b)=>a.localeCompare(b,"ja"));
   var list=document.getElementById("catList");list.innerHTML="";
   var allLi=document.createElement("li");allLi.textContent="すべて";if(currentCategory==="all")allLi.classList.add("active");
-  allLi.onclick=function(){setCategory("all");toggleSidebar();};list.appendChild(allLi);
+  allLi.onclick=function(){setCategory("all");};list.appendChild(allLi);
   categories.forEach(cat=>{
     var li=document.createElement("li");if(cat===currentCategory)li.classList.add("active");
     var span=document.createElement("span");span.textContent=cat;span.style.flex="1";li.appendChild(span);
     var edit=document.createElement("span");edit.textContent="✎";edit.className="edit-btn";edit.onclick=function(e){e.stopPropagation();editCategory(cat);};li.appendChild(edit);
     var del=document.createElement("span");del.textContent="×";del.className="del-btn";del.onclick=function(e){e.stopPropagation();if(confirm(cat+" を削除しますか？")){categories=categories.filter(c=>c!==cat);saveCategories();renderCategories();}};li.appendChild(del);
-    li.onclick=function(){setCategory(cat);toggleSidebar();};list.appendChild(li);
+    li.onclick=function(){setCategory(cat);};list.appendChild(li);
   });
   var sel=document.getElementById("fCat");sel.innerHTML="";categories.forEach(cat=>{var o=document.createElement("option");o.value=cat;o.textContent=cat;sel.appendChild(o);});
 }
@@ -235,10 +277,16 @@ function toggleInfo(){var p=document.getElementById('infoPanel');p.style.display
 function toggleTheme(){theme=(theme==="light")?"dark":"light";document.body.className=theme;storageSet("theme",theme);}
 
 /* ===== ユーティリティ ===== */
-function todayStr(){var d=new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);}
+function todayStr(){
+  var d=new Date();
+  return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);
+}
 
 /* ===== 初期化 ===== */
-function init(){document.body.className=theme;loadNotes();loadCategories();render();}
+function init(){
+  document.body.className = theme;
+  loadNotes(); loadCategories(); render();
+}
 init();
 
 /* ===== モーダルドラッグ ===== */
@@ -273,11 +321,14 @@ init();
     };
   };
   window.onresize=function(){
-    if(dlg.style.display==='block' && !dragging){
-      centerDialog();
-    }
+    if(dlg.style.display==='block' && !dragging){ centerDialog(); }
   };
 })();
+
+/* ===== サイドバー開閉（スマホ用） ===== */
+function toggleSidebar(){
+  document.getElementById("sidebar").classList.toggle("open");
+}
 </script>
 </body>
 </html>
