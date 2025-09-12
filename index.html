@@ -5,30 +5,39 @@
 <title>Notes</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  /* ===== ベース ===== */
   body { font-family:"Meiryo UI", sans-serif; margin:0; }
   body.light { background:#f0f4f8; color:#2a3a50; }
   body.dark  { background:#0f1115; color:#e8edf5; }
 
-  /* ヘッダー */
-  .topbar { background:#4a90e2; color:#fff; padding:8px 12px; position:sticky; top:0; z-index:2000; }
+  /* ===== ヘッダー ===== */
+  .topbar {
+    background:#4a90e2; color:#fff;
+    padding:8px 12px; position:sticky; top:0; z-index:2000;
+  }
   .topbar-inner { display:flex; justify-content:space-between; align-items:center; }
   .topbar-title { font-weight:bold; }
   .topbar-actions { display:flex; flex-wrap:nowrap; gap:4px; overflow-x:auto; }
-  .btn { padding:4px 8px; cursor:pointer; border:none; border-radius:6px; background:#ffffff; color:#2a3a50; font-size:12px; white-space:nowrap; font-family:"Meiryo UI",sans-serif; }
+  .btn {
+    padding:4px 8px; cursor:pointer; border:none; border-radius:6px;
+    background:#ffffff; color:#2a3a50; font-size:12px; white-space:nowrap;
+    font-family:"Meiryo UI",sans-serif;
+  }
   .btn:hover { opacity:.9; }
   body.dark .btn { background:#2a3140; color:#e8edf5; }
   .btn-primary { background:#4a90e2; color:#fff; }
   .btn-danger  { background:#e24a4a; color:#fff; }
   .btn-cancel  { background:#fff; border:1px solid #999; color:#333; }
 
-  /* 情報/検索 */
+  /* ===== 情報＆検索 ===== */
   #infoPanel { display:none; font-size:12px; margin:8px 16px; color:#556; }
   #filterPanel { margin:8px 16px; }
-  #q { width:60%; padding:6px; border:1px solid #cfd8e3; border-radius:6px; font-size:13px; font-family:"Meiryo UI",sans-serif; }
+  #q {
+    width:60%; padding:6px; border:1px solid #cfd8e3; border-radius:6px;
+    font-size:13px; font-family:"Meiryo UI",sans-serif;
+  }
   #q::placeholder { color:#999; font-style:italic; }
 
-  /* ===== 2カラム ===== */
+  /* ===== レイアウト ===== */
   .container { display:flex; }
   .sidebar {
     width:180px; border-right:1px solid #d8e1eb; padding:14px;
@@ -37,7 +46,10 @@
   body.dark .sidebar { background:#1c1f28; border-color:#2a3140; }
   .sidebar h4 { margin:0 0 10px; font-size:13px; color:#6b7a90; }
   .sidebar ul { list-style:none; padding:0; margin:0; }
-  .sidebar li { cursor:pointer; margin:6px 0; padding:6px 8px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; font-size:13px; }
+  .sidebar li {
+    cursor:pointer; margin:6px 0; padding:6px 8px; border-radius:6px;
+    display:flex; justify-content:space-between; align-items:center; font-size:13px;
+  }
   .sidebar li.active { background:#4a90e2; color:#fff; }
   .sidebar .del-btn, .sidebar .edit-btn {
     font-size: 12px; margin-left:6px; cursor:pointer; opacity:0.6;
@@ -53,8 +65,10 @@
 
   /* ===== ノートカード ===== */
   .note {
-    border:1px solid #e3e8ef; background:#fff; border-radius:10px; padding:12px; margin-bottom:12px; cursor:pointer;
-    box-shadow:0 2px 6px rgba(0,0,0,.06); font-size:13px; white-space:pre-wrap; word-wrap:break-word;
+    border:1px solid #e3e8ef; background:#fff; border-radius:10px;
+    padding:12px; margin-bottom:12px; cursor:pointer;
+    box-shadow:0 2px 6px rgba(0,0,0,.06);
+    font-size:13px; white-space:pre-wrap; word-wrap:break-word;
     display:flex; flex-direction:column; gap:4px;
     font-family:"Meiryo UI",sans-serif;
   }
@@ -68,33 +82,41 @@
     display:none; position:absolute;
     width:600px; max-width:95%;
     background:#fff; color:#2a3a50; border:1px solid #d0d7e2; border-radius:10px;
-    box-shadow:0 16px 32px rgba(0,0,0,.3); z-index:1000; font-size:13px; font-family:"Meiryo UI",sans-serif;
+    box-shadow:0 16px 32px rgba(0,0,0,.3); z-index:1000;
+    font-size:13px; font-family:"Meiryo UI",sans-serif;
   }
   body.dark #dlg { background:#141925; color:#e8edf5; border-color:#2a3140; }
   #dlgHeader {
     padding:10px 14px; background:#4a90e2; color:#fff; border-radius:10px 10px 0 0;
-    cursor:move; user-select:none; font-weight:bold; font-family:"Meiryo UI",sans-serif;
+    cursor:move; user-select:none; font-weight:bold;
   }
   #dlg .content { padding:20px; }
   #dlg input, #dlg textarea, #dlg select {
-    width:100%; margin-bottom:10px; padding:8px; border:1px solid #cfd8e3; border-radius:6px; font-size:13px; font-family:"Meiryo UI",sans-serif;
+    width:100%; margin-bottom:10px; padding:8px; border:1px solid #cfd8e3; border-radius:6px;
+    font-size:13px; font-family:"Meiryo UI",sans-serif;
   }
   .modal-footer { text-align:right; }
 
-  /* ===== スマホ用スライドイン ===== */
-  #editorPanel {
-    display:none; position:fixed; top:0; right:-100%; width:100%; height:100%;
-    background:#fff; z-index:3000; transition:right .3s ease;
-    padding:12px; box-sizing:border-box; font-family:"Meiryo UI",sans-serif;
+  /* ===== モバイル用スライドイン ===== */
+  .mobile-editor {
+    position: fixed; top:0; left:100%;
+    width:100%; height:100%;
+    background:#fff; transition:left 0.3s ease;
+    z-index:3000; display:flex; flex-direction:column;
   }
-  #editorPanel.active { right:0; }
-  #editorHeader {
+  .mobile-editor.show { left:0; }
+  .editor-header {
     display:flex; justify-content:space-between; align-items:center;
-    padding:10px; background:#4a90e2; color:#fff; font-weight:bold;
+    padding:12px; background:#4a90e2; color:#fff; font-weight:bold;
   }
-  #editorPanel input, #editorPanel textarea, #editorPanel select {
-    width:100%; margin:8px 0; padding:8px; border:1px solid #ccc; border-radius:6px;
-    font-family:"Meiryo UI",sans-serif;
+  .editor-header button {
+    background:#fff; border:none; border-radius:4px; padding:4px 8px;
+  }
+  .editor-content {
+    flex:1; padding:12px; overflow-y:auto;
+  }
+  .editor-content input, .editor-content textarea, .editor-content select {
+    width:100%; margin-bottom:10px; padding:8px; border:1px solid #ccc; border-radius:6px;
   }
 </style>
 </head>
@@ -150,16 +172,18 @@
   </div>
 </div>
 
-<!-- ===== スマホ用スライドイン ===== -->
-<div id="editorPanel">
-  <div id="editorHeader">
+<!-- ===== モバイル用エディタ ===== -->
+<div class="mobile-editor" id="mobileEditor">
+  <div class="editor-header">
     <span>ノート編集</span>
-    <button class="btn btn-primary" onclick="saveNoteMobile()">戻る</button>
+    <button onclick="closeMobileEditor()">閉じる</button>
   </div>
-  <input type="date" id="mDate">
-  <select id="mCat"></select>
-  <input type="text" id="mTitle" placeholder="タイトル">
-  <textarea id="mNotes" placeholder="本文" rows="6"></textarea>
+  <div class="editor-content">
+    <input type="date" id="mDate">
+    <select id="mCat"></select>
+    <input type="text" id="mTitle" placeholder="タイトル">
+    <textarea id="mNotes" placeholder="本文" rows="8"></textarea>
+  </div>
 </div>
 <script>
 var notes=[],current=null,categories=[],theme=(function(){try{return localStorage.getItem("theme")||"light";}catch(e){return"light";}})(),currentCategory="all",selectedIds=new Set();
@@ -169,7 +193,7 @@ function storageGet(k){try{return localStorage.getItem(k);}catch(e){return null;
 function storageSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 function loadNotes(){var d=storageGet("notes");if(d){try{notes=JSON.parse(d)||[];}catch(e){notes=[];}}}
 function saveNotes(){storageSet("notes",JSON.stringify(notes));}
-function loadCategories(){var d=storageGet("categories");if(d){try{categories=JSON.parse(d)||["daily","weekly","kb"];}catch(e){categories=["daily","weekly","kb"];}}else{categories=["daily","weekly","kb"];}}
+function loadCategories(){var d=storageGet("categories");if(d){try{categories=JSON.parse(d)||["daily","weekly","kb"];}catch(e){categories=["daily","weekly","kb"];}}else{categories=["daily","weekly","kb"];} }
 function saveCategories(){storageSet("categories",JSON.stringify(categories));}
 
 /* ===== レンダリング ===== */
@@ -207,11 +231,8 @@ function renderCategories(){
     var del=document.createElement("span");del.textContent="×";del.className="del-btn";del.onclick=function(e){e.stopPropagation();if(confirm(cat+" を削除しますか？")){categories=categories.filter(c=>c!==cat);saveCategories();renderCategories();}};li.appendChild(del);
     li.onclick=function(){setCategory(cat);};list.appendChild(li);
   });
-  var sel=document.getElementById("fCat"),msel=document.getElementById("mCat");
-  sel.innerHTML="";msel.innerHTML="";
-  categories.forEach(cat=>{
-    var o=document.createElement("option");o.value=cat;o.textContent=cat;sel.appendChild(o.cloneNode(true));msel.appendChild(o);
-  });
+  var sel=document.getElementById("fCat");sel.innerHTML="";categories.forEach(cat=>{var o=document.createElement("option");o.value=cat;o.textContent=cat;sel.appendChild(o);});
+  var msel=document.getElementById("mCat");msel.innerHTML="";categories.forEach(cat=>{var o=document.createElement("option");o.value=cat;o.textContent=cat;msel.appendChild(o);});
 }
 
 /* ===== カテゴリ操作 ===== */
@@ -224,15 +245,15 @@ function toggleSelect(id,chk){if(selectedIds.has(id))selectedIds.delete(id);else
 function deleteSelected(){if(selectedIds.size===0){alert("削除対象がありません");return;}if(confirm("選択したノートを削除しますか？")){notes=notes.filter(n=>!selectedIds.has(n.id));selectedIds.clear();saveNotes();render();}}
 
 /* ===== エディタ ===== */
-function isMobile(){return window.innerWidth<=768;}
 function openEditor(n){
   current=n||{id:new Date().getTime(),date:todayStr(),cat:categories[0]||"daily",title:'',notes:''};
-  if(isMobile()){
-    document.getElementById('mDate').value=current.date;
-    document.getElementById('mCat').value=current.cat;
-    document.getElementById('mTitle').value=current.title;
-    document.getElementById('mNotes').value=current.notes;
-    document.getElementById('editorPanel').classList.add('show');
+  var isMobile=window.innerWidth<=600;
+  if(isMobile){
+    document.getElementById("mDate").value=current.date;
+    document.getElementById("mCat").value=current.cat;
+    document.getElementById("mTitle").value=current.title;
+    document.getElementById("mNotes").value=current.notes;
+    document.getElementById("mobileEditor").classList.add("active");
   }else{
     document.getElementById('fDate').value=current.date;
     document.getElementById('fCat').value=current.cat;
@@ -243,41 +264,30 @@ function openEditor(n){
 }
 function openEditorById(id){var n=notes.find(x=>x.id===id);if(n)openEditor(n);}
 function closeEditor(){document.getElementById('dlg').style.display='none';}
-function saveNote(){
-  current.date=document.getElementById('fDate').value;
-  current.cat=document.getElementById('fCat').value;
-  current.title=document.getElementById('fTitle').value;
-  current.notes=document.getElementById('fNotes').value;
-  var i=notes.findIndex(x=>x.id===current.id);if(i>=0)notes[i]=current;else notes.unshift(current);
-  saveNotes();render();closeEditor();
-}
-function saveNoteMobile(){
-  current.date=document.getElementById('mDate').value;
-  current.cat=document.getElementById('mCat').value;
-  current.title=document.getElementById('mTitle').value;
-  current.notes=document.getElementById('mNotes').value;
-  var i=notes.findIndex(x=>x.id===current.id);if(i>=0)notes[i]=current;else notes.unshift(current);
-  saveNotes();render();
-  document.getElementById('editorPanel').classList.remove('show');
-}
-function deleteNote(){if(!current)return;if(confirm("削除しますか？")){notes=notes.filter(n=>n.id!==current.id);saveNotes();render();closeEditor();}}
+function closeMobileEditor(){document.getElementById("mobileEditor").classList.remove("active");saveMobileNote();}
+function saveNote(){current.date=document.getElementById('fDate').value;current.cat=document.getElementById('fCat').value;current.title=document.getElementById('fTitle').value;current.notes=document.getElementById('fNotes').value;var i=notes.findIndex(x=>x.id===current.id);if(i>=0)notes[i]=current;else notes.unshift(current);saveNotes();render();closeEditor();}
+function saveMobileNote(){current.date=document.getElementById('mDate').value;current.cat=document.getElementById('mCat').value;current.title=document.getElementById('mTitle').value;current.notes=document.getElementById('mNotes').value;var i=notes.findIndex(x=>x.id===current.id);if(i>=0)notes[i]=current;else notes.unshift(current);saveNotes();render();}
 
 /* ===== Ex/Import ===== */
 function exportNotes(){var data=JSON.stringify(notes,null,2);var blob=new Blob([data],{type:"application/json"});var url=URL.createObjectURL(blob);var a=document.createElement("a");var d=new Date(),fn="notes-"+d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)+".json";a.href=url;a.download=fn;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);}
 function importNotes(e){
-  var file=e.target.files[0];if(!file)return;
-  var reader=new FileReader();
-  reader.onload=function(evt){
-    try{
-      var imported=JSON.parse(evt.target.result);
-      if(imported&&imported.length){
-        imported.forEach(n=>{if(notes.some(x=>x.id===n.id)){n.id=Date.now()+Math.floor(Math.random()*10000);}});
-        if(confirm("既存に追加しますか？キャンセル=中止")){
-          notes=notes.concat(imported);
-          saveNotes();render();alert("インポート完了！");
+  var file=e.target.files[0]; if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(evt){
+    try {
+      var imported = JSON.parse(evt.target.result);
+      if(imported && imported.length){
+        imported.forEach(n=>{
+          if(notes.some(x=>x.id===n.id)){
+            n.id = Date.now() + Math.floor(Math.random()*10000);
+          }
+        });
+        if(confirm("既存のノートに追加しますか？\nキャンセル = 中止")){
+          notes = notes.concat(imported);
+          saveNotes(); render(); alert("インポート完了！");
         }
       }
-    }catch(err){alert("インポート失敗: "+err.message);}
+    } catch(err){ alert("インポート失敗: "+err.message); }
   };
   reader.readAsText(file);
 }
@@ -299,10 +309,30 @@ init();
   var startX=0,startY=0,startLeft=0,startTop=0,dragging=false;
   function getClientWidth(){return document.documentElement.clientWidth||document.body.clientWidth;}
   function getScrollTop(){return document.documentElement.scrollTop||document.body.scrollTop;}
-  function centerDialog(){var w=getClientWidth();var dw=dlg.offsetWidth||520;var left=Math.max(10,Math.floor((w-dw)/2));var top=getScrollTop()+80;dlg.style.left=left+"px";dlg.style.top=top+"px";}
+  function centerDialog(){
+    var w=getClientWidth();
+    var dw=dlg.offsetWidth||520;
+    var left=Math.max(10,Math.floor((w-dw)/2));
+    var top=getScrollTop()+80;
+    dlg.style.left=left+"px";
+    dlg.style.top=top+"px";
+  }
   window.centerDialog=centerDialog;
-  header.onmousedown=function(e){dragging=true;startX=e.clientX;startY=e.clientY;startLeft=dlg.offsetLeft;startTop=dlg.offsetTop;document.onmousemove=function(e2){if(!dragging)return;var dx=e2.clientX-startX;var dy=e2.clientY-startY;dlg.style.left=(startLeft+dx)+"px";dlg.style.top=(startTop+dy)+"px";};document.onmouseup=function(){dragging=false;document.onmousemove=null;document.onmouseup=null;};};
-  window.onresize=function(){if(dlg.style.display==='block'&&!dragging){centerDialog();}};
+  header.onmousedown=function(e){
+    dragging=true; startX=e.clientX; startY=e.clientY;
+    startLeft=dlg.offsetLeft; startTop=dlg.offsetTop;
+    document.onmousemove=function(e2){
+      if(!dragging)return;
+      var dx=e2.clientX-startX;
+      var dy=e2.clientY-startY;
+      dlg.style.left=(startLeft+dx)+"px";
+      dlg.style.top=(startTop+dy)+"px";
+    };
+    document.onmouseup=function(){
+      dragging=false; document.onmousemove=null; document.onmouseup=null;
+    };
+  };
+  window.onresize=function(){ if(dlg.style.display==='block' && !dragging){ centerDialog(); } };
 })();
 </script>
 </body>
