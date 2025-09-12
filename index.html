@@ -246,25 +246,30 @@ function deleteSelected(){if(selectedIds.size===0){alert("削除対象があり�
 
 /* ===== エディタ ===== */
 function openEditor(n){
-  current=n||{id:new Date().getTime(),date:todayStr(),cat:categories[0]||"daily",title:'',notes:''};
-  var isMobile=window.innerWidth<=600;
-  if(isMobile){
-    document.getElementById("mDate").value=current.date;
-    document.getElementById("mCat").value=current.cat;
-    document.getElementById("mTitle").value=current.title;
-    document.getElementById("mNotes").value=current.notes;
-    document.getElementById("mobileEditor").classList.add("active");
-  }else{
-    document.getElementById('fDate').value=current.date;
-    document.getElementById('fCat').value=current.cat;
-    document.getElementById('fTitle').value=current.title;
-    document.getElementById('fNotes').value=current.notes;
-    document.getElementById('dlg').style.display='block';centerDialog();
+  current = n || {id:Date.now(), date:todayStr(), cat:categories[0]||"daily", title:'', notes:''};
+
+  if(window.innerWidth <= 600){ 
+    // モバイル用エディタに値をセット
+    document.getElementById('mDate').value = current.date;
+    document.getElementById('mCat').value = current.cat;
+    document.getElementById('mTitle').value = current.title;
+    document.getElementById('mNotes').value = current.notes;
+    document.getElementById('mobileEditor').classList.add('show');
+  } else {
+    // PC用モーダルに値をセット
+    document.getElementById('fDate').value = current.date;
+    document.getElementById('fCat').value = current.cat;
+    document.getElementById('fTitle').value = current.title;
+    document.getElementById('fNotes').value = current.notes;
+    document.getElementById('dlg').style.display = 'block';
+    centerDialog();
   }
 }
 function openEditorById(id){var n=notes.find(x=>x.id===id);if(n)openEditor(n);}
 function closeEditor(){document.getElementById('dlg').style.display='none';}
-function closeMobileEditor(){document.getElementById("mobileEditor").classList.remove("active");saveMobileNote();}
+function closeMobileEditor(){
+  document.getElementById('mobileEditor').classList.remove('show');
+}
 function saveNote(){current.date=document.getElementById('fDate').value;current.cat=document.getElementById('fCat').value;current.title=document.getElementById('fTitle').value;current.notes=document.getElementById('fNotes').value;var i=notes.findIndex(x=>x.id===current.id);if(i>=0)notes[i]=current;else notes.unshift(current);saveNotes();render();closeEditor();}
 function saveMobileNote(){current.date=document.getElementById('mDate').value;current.cat=document.getElementById('mCat').value;current.title=document.getElementById('mTitle').value;current.notes=document.getElementById('mNotes').value;var i=notes.findIndex(x=>x.id===current.id);if(i>=0)notes[i]=current;else notes.unshift(current);saveNotes();render();}
 
