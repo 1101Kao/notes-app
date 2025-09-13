@@ -678,42 +678,49 @@ function toggleSelectAll(master){
 }
 
 // ===== 選択したものをexport =====   
+/* ===== Export モーダル ===== */
+function openExportDialog(){
+  document.getElementById("exportDlg").style.display = "block";
+}
+function closeExportDialog(){
+  document.getElementById("exportDlg").style.display = "none";
+}
+
 function doExport(){
-  const start = document.getElementById("expStart").value;
-  const end   = document.getElementById("expEnd").value;
-  const onlySelected = document.getElementById("expSelected").checked;
+  let data = notes;
 
-  let filtered = notes;
-
-  if(onlySelected){
-    const q = (document.getElementById('q').value||'').toLowerCase();
-    filtered = filtered.filter(n => selectedIds.has(n.id) &&
-      (currentCategory==="all" || n.cat===currentCategory) &&
-      ((!q) || (n.title||"").toLowerCase().includes(q) || (n.notes||"").toLowerCase().includes(q))
-    );
+  // チェック付きのみ
+  if(document.getElementById("expSelected").checked){
+    data = data.filter(n => selectedIds.has(n.id));
   }
 
-  if(start){ filtered = filtered.filter(n => n.date >= start); }
-  if(end){ filtered = filtered.filter(n => n.date <= end); }
+  // 日付範囲
+  const start = document.getElementById("expStart").value;
+  const end   = document.getElementById("expEnd").value;
+  if(start){
+    data = data.filter(n => new Date(n.date) >= new Date(start));
+  }
+  if(end){
+    data = data.filter(n => new Date(n.date) <= new Date(end));
+  }
 
-  if(filtered.length===0){
+  if(!data.length){
     alert("条件に合うノートがありません");
     return;
   }
 
-  const data = JSON.stringify(filtered,null,2);
-  const blob = new Blob([data],{type:"application/json"});
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
   const url  = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "notes-export-"+todayStr()+".json";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  const a    = document.createElement("a");
+  const d    = new Date();
+  const fn   = "notes-export-"+d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)+".json";
+  a.href = url; a.download = fn;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
 
   closeExportDialog();
 }
+
 
   
 </script>
