@@ -144,9 +144,6 @@
   margin-top:10px;
 }
 
-
-
-
  /* ===== モバイル用エディタ ===== */
 .mobile-editor {
   position: fixed;
@@ -216,8 +213,6 @@
   background: #fff;
   color: #333;
 }
-
-
 
   /* ===== 検索ボックスの幅調整 ===== */
   @media screen and (max-width:600px) {
@@ -296,6 +291,26 @@
     box-sizing: border-box;
     max-width: 100%;
   }
+
+.select-all {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #4a90e2;
+  cursor: pointer;
+  user-select: none;
+}
+
+.select-all input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #4a90e2; /* ブルー系で統一 */
+  cursor: pointer;
+}
+  
 </style>
 </head>
 <body class="light">
@@ -321,8 +336,6 @@
 <!-- 情報＆検索 -->
 <div id="infoPanel">「＋」でノート作成できます。チェックをつけて「del」で一括削除できます。</div>
 <div id="filterPanel"><input type="text" id="q" placeholder="検索したいワード" onkeyup="render()"></div>
-<!-- 全選択用 -->
-<label><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"> 全選択</label>
 
 <!-- ===== 2カラム ===== -->
 <div class="container">
@@ -335,6 +348,10 @@
     </div>
   </div>
   <div class="main">
+    <!-- 全選択用 -->
+    <div class="select-all">
+    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+  </div>
     <div id="list"></div>
   </div>
 </div>
