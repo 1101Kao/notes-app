@@ -4,8 +4,78 @@
 <meta charset="utf-8">
 <title>Notes</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- CSS 読み込み -->
-  <link rel="stylesheet" href="style.css">
+  
+    }
+  }
+
+  /* ===== モバイルでカテゴリ操作ボタンを大きく ===== */
+  @media screen and (max-width:600px) {
+    .sidebar .edit-btn,
+    .sidebar .del-btn {
+      font-size:20px;
+      padding:1px;
+    }
+  }
+
+  /* ===== モバイルレイアウト調整 ===== */
+  @media screen and (max-width:600px) {
+    .sidebar {
+      position: fixed;
+      left: -100%;
+      top: 0; bottom: 0;
+      width: 80%; max-width: 280px;
+      background: #fff;
+      transition: left 0.3s ease;
+      z-index: 2500;
+      box-shadow: 2px 0 8px rgba(0,0,0,.2);
+    }
+    .sidebar.show { left: 0; }
+
+    .menu-toggle {
+      display:inline-block;
+      font-size:30px;
+      margin-right:10px;
+      cursor:pointer;
+    }
+
+    .note {
+      border: none;
+      border-bottom: 1px solid #ddd;
+      border-radius: 0;
+      padding: 12px;
+      box-shadow: none;
+      background: transparent;
+    }
+    .note h3 { font-size: 16px; margin: 0 0 4px; font-weight: bold; }
+    .note small { display: block; color: #888; margin-bottom: 4px; }
+    .note p {
+      font-size: 13px; color:#444; margin:0;
+      white-space:pre-wrap; /* ← 修正済み */
+      overflow:hidden; text-overflow:ellipsis;
+    }
+
+    /* ===== モバイル新規ボタン ===== */
+    .fab {
+      position: fixed;
+      bottom: 16px; right: 16px;
+      width: 56px; height: 56px;
+      border-radius: 50%; border: none;
+      background: #2a3a50; color: #fff;
+      font-size: 28px; font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      cursor: pointer; transition: background 0.3s;
+      z-index: 3000;
+    }
+    .fab:hover { background: #a90e2; }
+  }
+
+  /* ===== はみ出し防止 ===== */
+  .note, .mobile-editor, .editor-content,
+  input, textarea, select {
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+</style>
 </head>
 <body class="light">
 <!-- ===== Topbar ===== -->
