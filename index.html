@@ -553,19 +553,63 @@ init();
   window.onresize=function(){if(dlg.style.display==='block'&&!dragging){centerDialog();}};
 })();
 
-/* ===== モバイル専用：新規エディタを開く ===== */
-function openMobileEditor(){
-  current = {id: Date.now(), date: todayStr(), cat: categories[0] || "daily", title:'', notes:''};
+// ===== モバイルエディタ =====
+let mobileDirty = false; // 入力内容に変更があったかどうか
 
-  // 入力欄を初期化
+function openMobileEditor(note = null){
+  current = note || {
+    id: Date.now(),
+    date: todayStr(),
+    cat: categories[0] || "daily",
+    title: '',
+    notes: '',
+    pinned: false
+  };
   document.getElementById('mDate').value  = current.date;
   document.getElementById('mCat').value   = current.cat;
-  document.getElementById('mTitle').value = "";
-  document.getElementById('mNotes').value = "";
+  document.getElementById('mTitle').value = current.title;
+  document.getElementById('mNotes').value = current.notes;
 
-  // エディタを表示
   document.getElementById('mobileEditor').classList.add('show');
+  mobileDirty = false; // 開いた直後は未変更
+  attachMobileChangeWatch();
 }
+
+function attachMobileChangeWatch(){
+  ["mDate","mCat","mTitle","mNotes"].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el){
+      el.oninput = () => { mobileDirty = true; };
+    }
+  });
+}
+
+function saveMobileNote(){
+  if(!current){
+    current = {id: Date.now()};
+    notes.unshift(current);
+  }
+  current.date  = document.getElementById('mDate').value;
+  current.cat   = document.getElementById('mCat').value;
+  current.title = document.getElementById('mTitle').value;
+  current.notes = document.getElementById('mNotes').value;
+
+  const i = notes.findIndex(x=>x.id===current.id);
+  if(i>=0) notes[i] = current; else notes.unshift(current);
+
+  saveNotes();
+  render();
+  mobileDirty = false; // 保存したので未変更状態
+}
+
+function closeMobileEditor(){
+  if(mobileDirty){
+    if(!confirm("変更が保存されていません。閉じますか？")) return;
+  }
+  document.getElementById('mobileEditor').classList.remove('show');
+  mobileDirty = false;
+}
+
 
   
 </script>
