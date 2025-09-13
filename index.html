@@ -274,8 +274,7 @@ input, textarea, select {
 <div class="mobile-editor" id="mobileEditor">
   <div class="editor-header">
     <span>ノート編集</span>
-   <button onclick="saveNote(); closeMobileEditor()">閉じる</button>
-  </div>
+   <button onclick="saveNoteMobile(); closeMobileEditor()">閉じる</button>
   <div class="editor-content">
     <input type="date" id="mDate">
     <select id="mCat"></select>
@@ -471,6 +470,18 @@ function openMobileEditor(){
 }
 function closeMobileEditor(){
   document.getElementById("mobileEditor").classList.remove("show");
+}
+function saveNoteMobile(){
+  if(!current){
+    current = {id: new Date().getTime()};
+    notes.unshift(current);
+  }
+  current.date  = document.getElementById('mDate').value;
+  current.cat   = document.getElementById('mCat').value;
+  current.title = document.getElementById('mTitle').value;
+  current.notes = document.getElementById('mNotes').value;
+  saveNotes();
+  render();
 }
 
 </script>
