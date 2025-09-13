@@ -54,7 +54,7 @@
   /* ===== レイアウト ===== */
   .container { display:flex; }
   .sidebar {
-    width:180px; border-right:1px solid #d8e1eb; padding:14px;
+    width:200px; border-right:1px solid #d8e1eb; padding:14px;
     background: linear-gradient(180deg,#ffffff,#f7f9fc);
   }
   body.dark .sidebar { background:#1c1f28; border-color:#2a3140; }
@@ -308,14 +308,19 @@ input, textarea, select {
 <div class="mobile-editor" id="mobileEditor">
   <div class="editor-header">
     <span>ノート編集</span>
-   <button onclick="saveNoteMobile(); closeMobileEditor()">閉じる</button>
+    <button onclick="closeMobileEditor()">閉じる</button>
+  </div> <!-- ←抜けてた閉じタグを追加 -->
   <div class="editor-content">
     <input type="date" id="mDate">
     <select id="mCat"></select>
     <input type="text" id="mTitle" placeholder="タイトル">
     <textarea id="mNotes" placeholder="本文" rows="8"></textarea>
+    <div style="text-align:right; margin-top:10px;">
+      <button class="btn btn-primary" onclick="saveNoteMobile(); closeMobileEditor()">保存</button>
+    </div>
   </div>
 </div>
+
 <!-- モバイル新規ボタン -->
 <button class="fab" onclick="openMobileEditor()">＋</button>
 
