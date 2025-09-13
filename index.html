@@ -354,7 +354,9 @@ function render(){
     var title=document.createElement('h3');title.textContent=n.title||"(無題)";
     header.appendChild(chk);header.appendChild(title);div.appendChild(header);
     var meta=document.createElement('small');meta.textContent=n.date+"（"+n.cat+"）";div.appendChild(meta);
-    var p=document.createElement('p');p.textContent=n.notes||"";div.appendChild(p);
+    var p=document.createElement('p');
+p.innerHTML = (n.notes||"").replace(/\n/g,"<br>");
+div.appendChild(p);
     div.ondblclick=function(){openEditorById(n.id);};
     div.onclick=function(e){if(e.target.tagName!=="INPUT"){toggleSelect(n.id,chk);chk.checked=selectedIds.has(n.id);}};
     list.appendChild(div);
