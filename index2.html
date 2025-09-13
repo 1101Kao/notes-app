@@ -116,6 +116,16 @@
   }
   .modal-footer { text-align:right; }
 
+  /* ===== export設定用モーダル ===== */
+  #exportDlg {
+  display:none; position:fixed; top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  background:#fff; border:1px solid #ccc; border-radius:10px;
+  padding:20px; z-index:4000;
+  box-shadow:0 8px 20px rgba(0,0,0,.3);
+}
+
+
  /* ===== モバイル用エディタ ===== */
 .mobile-editor {
   position: fixed;
@@ -278,6 +288,7 @@
       <button class="btn" onclick="toggleInfo()">info</button>
       <button class="btn" onclick="toggleTheme()">tm</button>
       <button class="btn" onclick="exportNotes()">ex</button>
+      <button class="btn" onclick="openExportDialog()">ex+</button>
       <input type="file" id="importFile" style="display:none" onchange="importNotes(event)">
       <button class="btn" onclick="document.getElementById('importFile').click()">in</button>
       <button class="btn btn-danger" onclick="deleteSelected()">del</button>
@@ -289,6 +300,8 @@
 <!-- 情報＆検索 -->
 <div id="infoPanel">「＋」でノート作成できます。チェックをつけて「del」で一括削除できます。</div>
 <div id="filterPanel"><input type="text" id="q" placeholder="検索したいワード" onkeyup="render()"></div>
+<!-- 全選択用 -->
+<label><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"> 全選択</label>
 
 <!-- ===== 2カラム ===== -->
 <div class="container">
@@ -320,7 +333,22 @@
     </div>
   </div>
 </div>
+<!-- ===== export設定用モーダル ===== -->
+  <div id="exportDlg" class="export-dlg">
+  <div class="content">
+    <h3>エクスポート条件</h3>
+    <label>開始日 <input type="date" id="expStart"></label><br>
+    <label>終了日 <input type="date" id="expEnd"></label><br>
+    <label><input type="checkbox" id="expSelected"> チェックしたノートのみ</label>
+    <div class="modal-footer">
+      <button class="btn btn-cancel" onclick="closeExportDialog()">キャンセル</button>
+      <button class="btn btn-primary" onclick="doExport()">エクスポート</button>
+    </div>
+  </div>
+</div>
 
+
+  
 <!-- ===== モバイル用エディタ ===== -->
 <div class="mobile-editor" id="mobileEditor">
   <div class="editor-header">
@@ -631,7 +659,61 @@ function closeMobileEditor(){
   document.getElementById('mobileEditor').classList.remove('show');
   mobileDirty = false;
 }
+   
+// ===== 全選択 =====
+function toggleSelectAll(master){
+  if(master.checked){
+    const q = (document.getElementById('q').value||'').toLowerCase();
+    notes.forEach(n=>{
+      // 表示中（カテゴリ＋検索条件）のみ対象
+      if((currentCategory==="all" || n.cat===currentCategory) &&
+         ((!q) || (n.title||"").toLowerCase().includes(q) || (n.notes||"").toLowerCase().includes(q))){
+        selectedIds.add(n.id);
+      }
+    });
+  } else {
+    selectedIds.clear();
+  }
+  render();
+}
 
+// ===== 選択したものをexport =====   
+function doExport(){
+  const start = document.getElementById("expStart").value;
+  const end   = document.getElementById("expEnd").value;
+  const onlySelected = document.getElementById("expSelected").checked;
+
+  let filtered = notes;
+
+  if(onlySelected){
+    const q = (document.getElementById('q').value||'').toLowerCase();
+    filtered = filtered.filter(n => selectedIds.has(n.id) &&
+      (currentCategory==="all" || n.cat===currentCategory) &&
+      ((!q) || (n.title||"").toLowerCase().includes(q) || (n.notes||"").toLowerCase().includes(q))
+    );
+  }
+
+  if(start){ filtered = filtered.filter(n => n.date >= start); }
+  if(end){ filtered = filtered.filter(n => n.date <= end); }
+
+  if(filtered.length===0){
+    alert("条件に合うノートがありません");
+    return;
+  }
+
+  const data = JSON.stringify(filtered,null,2);
+  const blob = new Blob([data],{type:"application/json"});
+  const url  = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "notes-export-"+todayStr()+".json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  closeExportDialog();
+}
 
   
 </script>
