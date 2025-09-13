@@ -340,44 +340,84 @@ function saveCategories(){storageSet("categories",JSON.stringify(categories));}
 
 /* ===== レンダリング ===== */
 function render(){
-  var list=document.getElementById('list');list.innerHTML='';
+  var list=document.getElementById('list');
+  list.innerHTML='';
   var q=(document.getElementById('q').value||'').toLowerCase();
-  notes.forEach(n=>{
-    if(currentCategory!=="all"&&n.cat!==currentCategory)return;
-    var t=(n.title||"").toLowerCase(),body=(n.notes||"").toLowerCase();
-    if(q&&t.indexOf(q)===-1&&body.indexOf(q)===-1)return;
 
-    var div=document.createElement('div');div.className='note';
-    var header=document.createElement('div');header.className='note-header';
-    var chk=document.createElement('input');chk.type='checkbox';chk.checked=selectedIds.has(n.id);
+  // ★ピン留めは常に最優先で上に来る
+  let sortedNotes = [...notes].sort((a,b)=>{
+    if (a.pinned && !b.pinned) return -1;
+    if (!a.pinned && b.pinned) return 1;
+    // どちらも同じピン状態なら日付降順（新しい順）
+    return (b.date||"").localeCompare(a.date||"");
+  });
+
+  sortedNotes.forEach(n=>{
+    // ← ここでカテゴリや検索のフィルタを適用
+    if(currentCategory!=="all" && n.cat!==currentCategory) return;
+    var t=(n.title||"").toLowerCase(),
+        body=(n.notes||"").toLowerCase();
+    if(q && t.indexOf(q)===-1 && body.indexOf(q)===-1) return;
+
+    // ノート要素作成
+    var div=document.createElement('div');
+    div.className='note';
+
+    var header=document.createElement('div');
+    header.className='note-header';
+
+    // ★ピンアイコン
+    var pin=document.createElement('span');
+    pin.textContent=n.pinned?"★":"☆";
+    pin.style.cursor="pointer";
+    pin.onclick=function(e){
+      e.stopPropagation();
+      n.pinned=!n.pinned;
+      saveNotes();
+      render();
+    };
+
+    // チェックボックス
+    var chk=document.createElement('input');
+    chk.type='checkbox';
+    chk.checked=selectedIds.has(n.id);
     chk.onchange=function(e){toggleSelect(n.id,chk);e.stopPropagation();};
-    var title=document.createElement('h3');title.textContent=n.title||"(無題)";
-    header.appendChild(chk);header.appendChild(title);div.appendChild(header);
-    var meta=document.createElement('small');meta.textContent=n.date+"（"+n.cat+"）";div.appendChild(meta);
+
+    // タイトル
+    var title=document.createElement('h3');
+    title.textContent=n.title||"(無題)";
+
+    // ヘッダーに配置（pin → chk → title）
+    header.appendChild(pin);
+    header.appendChild(chk);
+    header.appendChild(title);
+    div.appendChild(header);
+
+    // メタ情報
+    var meta=document.createElement('small');
+    meta.textContent=n.date+"（"+n.cat+"）";
+    div.appendChild(meta);
+
+    // 本文
     var p=document.createElement('p');
-p.innerHTML = (n.notes||"").replace(/\n/g,"<br>");
-div.appendChild(p);
+    p.textContent=n.notes||"";
+    div.appendChild(p);
+
+    // 編集動作
     div.ondblclick=function(){openEditorById(n.id);};
-    div.onclick=function(e){if(e.target.tagName!=="INPUT"){toggleSelect(n.id,chk);chk.checked=selectedIds.has(n.id);}};
+    div.onclick=function(e){
+      if(e.target.tagName!=="INPUT" && e.target.textContent!=="☆" && e.target.textContent!=="★"){
+        toggleSelect(n.id,chk);
+        chk.checked=selectedIds.has(n.id);
+      }
+    };
+
     list.appendChild(div);
   });
+
   renderCategories();
 }
-function renderCategories(){
-  categories.sort((a,b)=>a.localeCompare(b,"ja"));
-  var list=document.getElementById("catList");list.innerHTML="";
-  var allLi=document.createElement("li");allLi.textContent="すべて";if(currentCategory==="all")allLi.classList.add("active");
-  allLi.onclick=function(){setCategory("all");};list.appendChild(allLi);
-  categories.forEach(cat=>{
-    var li=document.createElement("li");if(cat===currentCategory)li.classList.add("active");
-    var span=document.createElement("span");span.textContent=cat;span.style.flex="1";li.appendChild(span);
-    var edit=document.createElement("span");edit.textContent="✎";edit.className="edit-btn";edit.onclick=function(e){e.stopPropagation();editCategory(cat);};li.appendChild(edit);
-    var del=document.createElement("span");del.textContent="×";del.className="del-btn";del.onclick=function(e){e.stopPropagation();if(confirm(cat+" を削除しますか？")){categories=categories.filter(c=>c!==cat);saveCategories();renderCategories();}};li.appendChild(del);
-    li.onclick=function(){setCategory(cat);};list.appendChild(li);
-  });
-  var sel=document.getElementById("fCat");sel.innerHTML="";categories.forEach(cat=>{var o=document.createElement("option");o.value=cat;o.textContent=cat;sel.appendChild(o);});
-  var msel=document.getElementById("mCat");msel.innerHTML="";categories.forEach(cat=>{var o=document.createElement("option");o.value=cat;o.textContent=cat;msel.appendChild(o);});
-}
+
 /* ===== トグル閉じる ===== */
 function toggleCats() {
   const sidebar = document.querySelector(".sidebar");
