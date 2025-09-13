@@ -167,6 +167,41 @@
   box-sizing: border-box;
 }
 
+/* ===== 入力欄の横幅統一 ===== */
+#dlg input, #dlg textarea, #dlg select,
+.mobile-editor .editor-content input,
+.mobile-editor .editor-content textarea,
+.mobile-editor .editor-content select {
+  display:block;
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+}
+
+/* ===== 検索ボックスの幅調整 ===== */
+#q {
+  width:300px;
+  max-width:60%;
+}
+@media screen and (max-width:600px) {
+  #q {
+    width:100%;
+    max-width:100%;
+    display:block;
+    margin:0 auto;
+  }
+}
+
+/* ===== モバイルでカテゴリ操作ボタンを大きく ===== */
+@media screen and (max-width:600px) {
+  .sidebar .edit-btn,
+  .sidebar .del-btn {
+    font-size:18px;
+    padding:4px;
+  }
+}
+
+
 /* ===== モバイルレイアウト調整 ===== */
 @media screen and (max-width:600px) {
   /* サイドバーをスライドインに */
