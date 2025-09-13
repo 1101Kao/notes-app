@@ -342,7 +342,8 @@
 
 
 <!-- モバイル新規ボタン -->
-<button class="fab" onclick="openMobileEditor()">＋</button>
+<button class="fab" onclick="onFabClick()">＋</button>
+
 
 
 <!-- ===== サイドバーしまう用 ===== -->
@@ -552,6 +553,32 @@ init();
   };
   window.onresize=function(){if(dlg.style.display==='block'&&!dragging){centerDialog();}};
 })();
+// ===== FAB ボタン動作 =====
+function onFabClick() {
+  const me = document.getElementById("mobileEditor");
+  if (me.classList.contains("show")) {
+    // すでにエディタ開いてる場合 → 未保存チェック
+    const curTitle = document.getElementById("mTitle").value;
+    const curNotes = document.getElementById("mNotes").value;
+    const curDate  = document.getElementById("mDate").value;
+    const curCat   = document.getElementById("mCat").value;
+
+    // 保存されてる内容と比較（current が今のノート）
+    if (current &&
+        (curTitle !== current.title ||
+         curNotes !== current.notes ||
+         curDate  !== current.date ||
+         curCat   !== current.cat)) {
+
+      if (!confirm("変更が保存されていません。新規ノートを作成しますか？")) {
+        return; // キャンセルしたら何もしない
+      }
+    }
+  }
+
+  // 新規作成モードへ
+  openMobileEditor();
+}
 
 // ===== モバイルエディタ =====
 let mobileDirty = false; // 入力内容に変更があったかどうか
