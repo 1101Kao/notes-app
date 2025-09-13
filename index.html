@@ -527,6 +527,22 @@ init();
   };
   window.onresize=function(){if(dlg.style.display==='block'&&!dragging){centerDialog();}};
 })();
+
+/* ===== モバイル専用：新規エディタを開く ===== */
+function openMobileEditor(){
+  current = {id: Date.now(), date: todayStr(), cat: categories[0] || "daily", title:'', notes:''};
+
+  // 入力欄を初期化
+  document.getElementById('mDate').value  = current.date;
+  document.getElementById('mCat').value   = current.cat;
+  document.getElementById('mTitle').value = "";
+  document.getElementById('mNotes').value = "";
+
+  // エディタを表示
+  document.getElementById('mobileEditor').classList.add('show');
+}
+
+  
 </script>
 
 </body>
