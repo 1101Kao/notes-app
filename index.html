@@ -323,15 +323,37 @@
 <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleCats()"></div>
 
 <script>
-var notes=[],current=null,categories=[],theme=(function(){try{return localStorage.getItem("theme")||"light";}catch(e){return"light";}})(),currentCategory="all",selectedIds=new Set();
+var notes = [],
+    current = null,
+    categories = [],
+    theme = (function(){
+      try { return localStorage.getItem("theme") || "light"; }
+      catch(e){ return "light"; }
+    })(),
+    currentCategory = "all",
+    selectedIds = new Set();
 
 /* ===== ストレージ ===== */
-function storageGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
-function storageSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
-function loadNotes(){var d=storageGet("notes");if(d){try{notes=JSON.parse(d)||[];}catch(e){notes=[];}}}
-function saveNotes(){storageSet("notes",JSON.stringify(notes));}
-function loadCategories(){var d=storageGet("categories");if(d){try{categories=JSON.parse(d)||["daily","weekly","kb"];}catch(e){categories=["daily","weekly","kb"];}}else{categories=["daily","weekly","kb"];} }
-function saveCategories(){storageSet("categories",JSON.stringify(categories));}
+function storageGet(k){ try{return localStorage.getItem(k);}catch(e){return null;} }
+function storageSet(k,v){ try{localStorage.setItem(k,v);}catch(e){} }
+
+function loadNotes(){
+  var d = storageGet("notes");
+  if(d){ try{ notes = JSON.parse(d)||[]; }catch(e){ notes=[]; } }
+}
+function saveNotes(){ storageSet("notes", JSON.stringify(notes)); }
+
+function loadCategories(){
+  var d = storageGet("categories");
+  if(d){
+    try{ categories = JSON.parse(d)||[]; }
+    catch(e){ categories=[]; }
+  }
+  if(!categories.length){
+    categories = ["daily","weekly","kb"];
+  }
+}
+function saveCategories(){ storageSet("categories", JSON.stringify(categories)); }
 
 /* ===== レンダリング ===== */
 function render(){
@@ -339,171 +361,278 @@ function render(){
   list.innerHTML='';
   var q=(document.getElementById('q').value||'').toLowerCase();
 
-  // ★ピン留めは常に最優先で上に来る
+  // ピン留めを優先して並べる
   let sortedNotes = [...notes].sort((a,b)=>{
-    if (a.pinned && !b.pinned) return -1;
-    if (!a.pinned && b.pinned) return 1;
-    // どちらも同じピン状態なら日付降順（新しい順）
-    return (b.date||"").localeCompare(a.date||"");
+    if(a.pinned && !b.pinned) return -1;
+    if(!a.pinned && b.pinned) return 1;
+    return 0;
   });
 
   sortedNotes.forEach(n=>{
-    // ← ここでカテゴリや検索のフィルタを適用
     if(currentCategory!=="all" && n.cat!==currentCategory) return;
+
     var t=(n.title||"").toLowerCase(),
         body=(n.notes||"").toLowerCase();
     if(q && t.indexOf(q)===-1 && body.indexOf(q)===-1) return;
 
-    // ノート要素作成
     var div=document.createElement('div');
     div.className='note';
 
     var header=document.createElement('div');
     header.className='note-header';
 
-    // ★ピンアイコン
+    // 📌 ピンボタン
     var pin=document.createElement('span');
-    pin.textContent=n.pinned?"★":"☆";
+    pin.textContent=n.pinned?"📌":"📍";
     pin.style.cursor="pointer";
     pin.onclick=function(e){
       e.stopPropagation();
       n.pinned=!n.pinned;
-      saveNotes();
-      render();
+      saveNotes(); render();
     };
 
-    // チェックボックス
     var chk=document.createElement('input');
     chk.type='checkbox';
     chk.checked=selectedIds.has(n.id);
-    chk.onchange=function(e){toggleSelect(n.id,chk);e.stopPropagation();};
+    chk.onchange=function(e){ toggleSelect(n.id,chk); e.stopPropagation(); };
 
-    // タイトル
     var title=document.createElement('h3');
     title.textContent=n.title||"(無題)";
 
-    // ヘッダーに配置（pin → chk → title）
     header.appendChild(pin);
     header.appendChild(chk);
     header.appendChild(title);
     div.appendChild(header);
 
-    // メタ情報
     var meta=document.createElement('small');
     meta.textContent=n.date+"（"+n.cat+"）";
     div.appendChild(meta);
 
-    // 本文
     var p=document.createElement('p');
     p.textContent=n.notes||"";
     div.appendChild(p);
 
-    // 編集動作
-    div.ondblclick=function(){openEditorById(n.id);};
+    div.ondblclick=function(){ openEditorById(n.id); };
     div.onclick=function(e){
-      if(e.target.tagName!=="INPUT" && e.target.textContent!=="☆" && e.target.textContent!=="★"){
+      if(e.target.tagName!=="INPUT" && e.target.tagName!=="SPAN"){
         toggleSelect(n.id,chk);
         chk.checked=selectedIds.has(n.id);
       }
     };
-
     list.appendChild(div);
   });
-
   renderCategories();
 }
 
-/* ===== トグル閉じる ===== */
-function toggleCats() {
-  const sidebar = document.querySelector(".sidebar");
-  const overlay = document.getElementById("sidebarOverlay");
-  const isOpen = sidebar.classList.toggle("show");
-  if (isOpen) {
-    overlay.classList.add("show");
-  } else {
-    overlay.classList.remove("show");
+function renderCategories(){
+  categories.sort((a,b)=>a.localeCompare(b,"ja"));
+  var list=document.getElementById("catList");
+  list.innerHTML="";
+
+  var allLi=document.createElement("li");
+  allLi.textContent="すべて";
+  if(currentCategory==="all") allLi.classList.add("active");
+  allLi.onclick=function(){ setCategory("all"); };
+  list.appendChild(allLi);
+
+  categories.forEach(cat=>{
+    var li=document.createElement("li");
+    if(cat===currentCategory) li.classList.add("active");
+
+    var span=document.createElement("span");
+    span.textContent=cat;
+    span.style.flex="1";
+    li.appendChild(span);
+
+    var edit=document.createElement("span");
+    edit.textContent="✎";
+    edit.className="edit-btn";
+    edit.onclick=function(e){ e.stopPropagation(); editCategory(cat); };
+    li.appendChild(edit);
+
+    var del=document.createElement("span");
+    del.textContent="×";
+    del.className="del-btn";
+    del.onclick=function(e){
+      e.stopPropagation();
+      if(confirm(cat+" を削除しますか？")){
+        categories=categories.filter(c=>c!==cat);
+        notes=notes.map(n=>{ if(n.cat===cat) n.cat="daily"; return n; });
+        saveCategories(); saveNotes(); renderCategories(); render();
+      }
+    };
+    li.appendChild(del);
+
+    li.onclick=function(){ setCategory(cat); };
+    list.appendChild(li);
+  });
+
+  // セレクトに反映
+  var sel=document.getElementById("fCat"); if(sel){
+    sel.innerHTML="";
+    categories.forEach(cat=>{
+      var o=document.createElement("option");
+      o.value=cat; o.textContent=cat;
+      sel.appendChild(o);
+    });
+  }
+  var msel=document.getElementById("mCat"); if(msel){
+    msel.innerHTML="";
+    categories.forEach(cat=>{
+      var o=document.createElement("option");
+      o.value=cat; o.textContent=cat;
+      msel.appendChild(o);
+    });
   }
 }
 
-
-
 /* ===== カテゴリ操作 ===== */
-function setCategory(cat){currentCategory=cat;render();}
-function addCategory(){var v=document.getElementById("newCat").value.trim();if(!v)return;if(categories.includes(v)){alert("既に存在します");return;}categories.push(v);saveCategories();renderCategories();document.getElementById("newCat").value="";}
-function editCategory(oldName){var newName=prompt("新しいカテゴリ名:",oldName);if(!newName||newName.trim()==="")return;newName=newName.trim();if(categories.includes(newName)){alert("既に存在します");return;}categories=categories.map(c=>c===oldName?newName:c);notes.forEach(n=>{if(n.cat===oldName)n.cat=newName;});saveCategories();saveNotes();render();}
+function setCategory(cat){ currentCategory=cat; render(); }
+function addCategory(){
+  var v=document.getElementById("newCat").value.trim();
+  if(!v) return;
+  if(categories.includes(v)){
+    alert("既に存在します"); return;
+  }
+  categories.push(v);
+  saveCategories();
+  renderCategories();
+  document.getElementById("newCat").value="";
+}
+function editCategory(oldName){
+  var newName=prompt("新しいカテゴリ名:",oldName);
+  if(!newName||newName.trim()==="") return;
+  newName=newName.trim();
+  if(categories.includes(newName)){
+    alert("既に存在します"); return;
+  }
+  categories=categories.map(c=>c===oldName?newName:c);
+  notes.forEach(n=>{ if(n.cat===oldName) n.cat=newName; });
+  saveCategories(); saveNotes(); render();
+}
 
 /* ===== 選択削除 ===== */
-function toggleSelect(id,chk){if(selectedIds.has(id))selectedIds.delete(id);else selectedIds.add(id);}
-function deleteSelected(){if(selectedIds.size===0){alert("削除対象がありません");return;}if(confirm("選択したノートを削除しますか？")){notes=notes.filter(n=>!selectedIds.has(n.id));selectedIds.clear();saveNotes();render();}}
+function toggleSelect(id,chk){
+  if(selectedIds.has(id)) selectedIds.delete(id);
+  else selectedIds.add(id);
+}
+function deleteSelected(){
+  if(selectedIds.size===0){ alert("削除対象がありません"); return; }
+  if(confirm("選択したノートを削除しますか？")){
+    notes=notes.filter(n=>!selectedIds.has(n.id));
+    selectedIds.clear();
+    saveNotes(); render();
+  }
+}
 
 /* ===== エディタ ===== */
 function openEditor(n){
-  current = n || {id:Date.now(), date:todayStr(), cat:categories[0]||"daily", title:'', notes:''};
-
-  if(window.innerWidth <= 600){ 
-    // モバイル用エディタに値をセット
-    document.getElementById('mDate').value = current.date;
-    document.getElementById('mCat').value = current.cat;
-    document.getElementById('mTitle').value = current.title;
-    document.getElementById('mNotes').value = current.notes;
+  current=n||{id:Date.now(),date:todayStr(),cat:categories[0]||"daily",title:'',notes:'',pinned:false};
+  if(window.innerWidth<=600){
+    document.getElementById('mDate').value=current.date;
+    document.getElementById('mCat').value=current.cat;
+    document.getElementById('mTitle').value=current.title;
+    document.getElementById('mNotes').value=current.notes;
     document.getElementById('mobileEditor').classList.add('show');
   } else {
-    // PC用モーダルに値をセット
-    document.getElementById('fDate').value = current.date;
-    document.getElementById('fCat').value = current.cat;
-    document.getElementById('fTitle').value = current.title;
-    document.getElementById('fNotes').value = current.notes;
-    document.getElementById('dlg').style.display = 'block';
+    document.getElementById('fDate').value=current.date;
+    document.getElementById('fCat').value=current.cat;
+    document.getElementById('fTitle').value=current.title;
+    document.getElementById('fNotes').value=current.notes;
+    document.getElementById('dlg').style.display='block';
     centerDialog();
   }
 }
-function openEditorById(id){var n=notes.find(x=>x.id===id);if(n)openEditor(n);}
-function closeEditor(){document.getElementById('dlg').style.display='none';}
-function closeMobileEditor(){
-  document.getElementById('mobileEditor').classList.remove('show');
+function openEditorById(id){ var n=notes.find(x=>x.id===id); if(n) openEditor(n); }
+function closeEditor(){ document.getElementById('dlg').style.display='none'; }
+function closeMobileEditor(){ document.getElementById('mobileEditor').classList.remove('show'); }
+
+function saveNote(){
+  current.date=document.getElementById('fDate').value;
+  current.cat=document.getElementById('fCat').value;
+  current.title=document.getElementById('fTitle').value;
+  current.notes=document.getElementById('fNotes').value;
+  var i=notes.findIndex(x=>x.id===current.id);
+  if(i>=0) notes[i]=current; else notes.unshift(current);
+  saveNotes(); render(); closeEditor();
 }
-function saveNote(){current.date=document.getElementById('fDate').value;current.cat=document.getElementById('fCat').value;current.title=document.getElementById('fTitle').value;current.notes=document.getElementById('fNotes').value;var i=notes.findIndex(x=>x.id===current.id);if(i>=0)notes[i]=current;else notes.unshift(current);saveNotes();render();closeEditor();}
-function saveMobileNote(){current.date=document.getElementById('mDate').value;current.cat=document.getElementById('mCat').value;current.title=document.getElementById('mTitle').value;current.notes=document.getElementById('mNotes').value;var i=notes.findIndex(x=>x.id===current.id);if(i>=0)notes[i]=current;else notes.unshift(current);saveNotes();render();}
+function saveMobileNote(){
+  if(!current){ current={id:Date.now(),pinned:false}; notes.unshift(current); }
+  current.date=document.getElementById('mDate').value;
+  current.cat=document.getElementById('mCat').value;
+  current.title=document.getElementById('mTitle').value;
+  current.notes=document.getElementById('mNotes').value;
+  var i=notes.findIndex(x=>x.id===current.id);
+  if(i>=0) notes[i]=current; else notes.unshift(current);
+  saveNotes(); render();
+}
 
 /* ===== Ex/Import ===== */
-function exportNotes(){var data=JSON.stringify(notes,null,2);var blob=new Blob([data],{type:"application/json"});var url=URL.createObjectURL(blob);var a=document.createElement("a");var d=new Date(),fn="notes-"+d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)+".json";a.href=url;a.download=fn;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);}
+function exportNotes(){
+  var data=JSON.stringify(notes,null,2);
+  var blob=new Blob([data],{type:"application/json"});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement("a");
+  var d=new Date();
+  var fn="notes-"+d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)+".json";
+  a.href=url; a.download=fn;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 function importNotes(e){
   var file=e.target.files[0]; if(!file) return;
-  var reader = new FileReader();
-  reader.onload = function(evt){
-    try {
-      var imported = JSON.parse(evt.target.result);
-      if(imported && imported.length){
+  var reader=new FileReader();
+  reader.onload=function(evt){
+    try{
+      var imported=JSON.parse(evt.target.result);
+      if(imported&&imported.length){
         imported.forEach(n=>{
           if(notes.some(x=>x.id===n.id)){
-            n.id = Date.now() + Math.floor(Math.random()*10000);
+            n.id=Date.now()+Math.floor(Math.random()*10000);
           }
         });
         if(confirm("既存のノートに追加しますか？\nキャンセル = 中止")){
-          notes = notes.concat(imported);
+          notes=notes.concat(imported);
           saveNotes(); render(); alert("インポート完了！");
         }
       }
-    } catch(err){ alert("インポート失敗: "+err.message); }
+    }catch(err){ alert("インポート失敗: "+err.message); }
   };
   reader.readAsText(file);
 }
 
 /* ===== 情報・テーマ ===== */
-function toggleInfo(){var p=document.getElementById('infoPanel');p.style.display=(p.style.display==='block')?'none':'block';}
-function toggleTheme(){theme=(theme==="light")?"dark":"light";document.body.className=theme;storageSet("theme",theme);}
+function toggleInfo(){
+  var p=document.getElementById('infoPanel');
+  p.style.display=(p.style.display==='block')?'none':'block';
+}
+function toggleTheme(){
+  theme=(theme==="light")?"dark":"light";
+  document.body.className=theme;
+  storageSet("theme",theme);
+}
 
 /* ===== ユーティリティ ===== */
-function todayStr(){var d=new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);}
+function todayStr(){
+  var d=new Date();
+  return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);
+}
 
 /* ===== 初期化 ===== */
-function init(){document.body.className=theme;loadNotes();loadCategories();render();}
+function init(){
+  document.body.className=theme;
+  loadNotes();
+  loadCategories();
+  render();
+}
 init();
 
 /* ===== モーダルドラッグ ===== */
 (function(){
-  var dlg=document.getElementById("dlg"),header=document.getElementById("dlgHeader");
+  var dlg=document.getElementById("dlg"),
+      header=document.getElementById("dlgHeader");
   var startX=0,startY=0,startLeft=0,startTop=0,dragging=false;
+
   function getClientWidth(){return document.documentElement.clientWidth||document.body.clientWidth;}
   function getScrollTop(){return document.documentElement.scrollTop||document.body.scrollTop;}
   function centerDialog(){
@@ -515,6 +644,7 @@ init();
     dlg.style.top=top+"px";
   }
   window.centerDialog=centerDialog;
+
   header.onmousedown=function(e){
     dragging=true; startX=e.clientX; startY=e.clientY;
     startLeft=dlg.offsetLeft; startTop=dlg.offsetTop;
@@ -526,40 +656,25 @@ init();
       dlg.style.top=(startTop+dy)+"px";
     };
     document.onmouseup=function(){
-      dragging=false; document.onmousemove=null; document.onmouseup=null;
+      dragging=false;
+      document.onmousemove=null;
+      document.onmouseup=null;
     };
   };
-  window.onresize=function(){ if(dlg.style.display==='block' && !dragging){ centerDialog(); } };
+  window.onresize=function(){
+    if(dlg.style.display==='block'&&!dragging){ centerDialog(); }
+  };
 })();
 
-// モバイル新規作成時は横幅100%のエディタを使う
-function openMobileEditor(){
-  const me = document.getElementById("mobileEditor");
-  if(me){
-    me.classList.add("show");
-    // 初期化（空白ノートをセット）
-    document.getElementById("mDate").value = todayStr();
-    document.getElementById("mCat").value = categories[0] || "daily";
-    document.getElementById("mTitle").value = "";
-    document.getElementById("mNotes").value = "";
-  }
+/* ===== サイドバー制御 ===== */
+function toggleCats(){
+  const sidebar=document.querySelector(".sidebar");
+  const overlay=document.getElementById("sidebarOverlay");
+  const isOpen=sidebar.classList.toggle("show");
+  if(isOpen){ overlay.classList.add("show"); }
+  else { overlay.classList.remove("show"); }
 }
-function closeMobileEditor(){
-  document.getElementById("mobileEditor").classList.remove("show");
-}
-function saveNoteMobile(){
-  if(!current){
-    current = {id: new Date().getTime()};
-    notes.unshift(current);
-  }
-  current.date  = document.getElementById('mDate').value;
-  current.cat   = document.getElementById('mCat').value;
-  current.title = document.getElementById('mTitle').value;
-  current.notes = document.getElementById('mNotes').value;
-  saveNotes();
-  render();
-}
-
 </script>
+
 </body>
 </html>
