@@ -328,17 +328,18 @@
   <div class="editor-header">
     <span>ノート編集</span>
     <button onclick="closeMobileEditor()">閉じる</button>
-  </div> <!-- ←抜けてた閉じタグを追加 -->
+  </div>
   <div class="editor-content">
     <input type="date" id="mDate">
     <select id="mCat"></select>
     <input type="text" id="mTitle" placeholder="タイトル">
     <textarea id="mNotes" placeholder="本文" rows="8"></textarea>
-    <div style="text-align:right; margin-top:10px;">
-      <button class="btn btn-primary" onclick="saveNoteMobile(); closeMobileEditor()">保存</button>
-    </div>
+
+    <!-- 保存ボタンをここに追加 -->
+    <button class="btn btn-primary" onclick="saveMobileNote()">保存</button>
   </div>
 </div>
+
 
 <!-- モバイル新規ボタン -->
 <button class="fab" onclick="openMobileEditor()">＋</button>
