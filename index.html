@@ -15,10 +15,14 @@
     top: 0; left: 0;
     width: 100%; height: 100%;
     background: rgba(0,0,0,0.3);
-    z-index: 2000; /* サイドバーのすぐ下 */
+    z-index: 2400; /* サイドバー (2500) より下に */
     display: none;
+    pointer-events: none; /* デフォルトではクリック無効 */
   }
-  .sidebar-overlay.show { display: block; }
+  .sidebar-overlay.show {
+    display: block;
+    pointer-events: auto; /* show のときだけ有効化 */
+  }
 
   /* ===== ヘッダー ===== */
   .topbar {
@@ -88,10 +92,7 @@
   .note-header { display:flex; align-items:center; gap:6px; }
   .note h3 { margin:0; font-size:15px; flex:1; }
   .note small { color:#6b7a90; font-size:12px; }
-  body.dark .note {
-    background:#141925; border-color:#2a3140; color:#e8edf5;
-    box-shadow:0 2px 8px rgba(0,0,0,.25);
-  }
+  body.dark .note { background:#141925; border-color:#2a3140; color:#e8edf5; box-shadow:0 2px 8px rgba(0,0,0,.25); }
 
   /* ===== PC用モーダル ===== */
   #dlg {
@@ -106,22 +107,22 @@
     padding:10px 14px; background:#4a90e2; color:#fff; border-radius:10px 10px 0 0;
     cursor:move; user-select:none; font-weight:bold;
   }
-  #dlg .content { padding:20px; box-sizing:border-box; }
+  #dlg .content { padding:20px; }
   #dlg input, #dlg textarea, #dlg select {
     display:block;
     width:100%; max-width:100%;
-    margin-bottom:12px; padding:8px;
-    border:1px solid #cfd8e3; border-radius:6px;
-    font-size:13px; font-family:"Meiryo UI",sans-serif;
-    box-sizing:border-box;
+    margin-bottom:10px; padding:8px; border:1px solid #cfd8e3; border-radius:6px;
+    font-size:13px; font-family:"Meiryo UI",sans-serif; box-sizing:border-box;
   }
   .modal-footer { text-align:right; }
 
   /* ===== モバイル用エディタ ===== */
   .mobile-editor {
     position: fixed;
-    top: 0; left: 100%;
-    width: 100%; height: 100%;
+    top: 0;
+    left: 100%;
+    width: 100%;
+    height: 100%;
     background: #fff;
     transition: left 0.3s ease;
     z-index: 3000;
@@ -141,28 +142,35 @@
     font-weight: bold;
   }
   .mobile-editor .editor-header button {
-    background: #fff; border: none; border-radius: 4px; padding: 4px 8px;
+    background: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
   }
-
   .mobile-editor .editor-content {
-    flex: 1; padding: 16px; overflow-y: auto;
-    background: #fff; box-sizing: border-box;
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    background: #fff;
+    box-sizing: border-box;
   }
   .mobile-editor .editor-content input,
   .mobile-editor .editor-content textarea,
   .mobile-editor .editor-content select {
     display:block;
-    width:100%; max-width:100%;
-    margin-bottom:12px; padding:10px;
-    border:1px solid #cfd8e3; border-radius:6px;
-    font-size:14px; box-sizing:border-box;
+    width: 100%; max-width:100%;
+    margin-bottom: 12px; padding: 10px;
+    border: 1px solid #cfd8e3; border-radius: 6px;
+    font-size: 14px; box-sizing: border-box;
   }
 
   /* ===== 検索ボックスの幅調整 ===== */
   @media screen and (max-width:600px) {
     #q {
-      width:100%; max-width:100%;
-      display:block; margin:0 auto;
+      width:100%;
+      max-width:100%;
+      display:block;
+      margin:0 auto;
     }
   }
 
@@ -179,7 +187,8 @@
   @media screen and (max-width:600px) {
     .sidebar {
       position: fixed;
-      left: -100%; top: 0; bottom: 0;
+      left: -100%;
+      top: 0; bottom: 0;
       width: 80%; max-width: 280px;
       background: #fff;
       transition: left 0.3s ease;
@@ -196,32 +205,35 @@
     }
 
     .note {
-      border:none; border-bottom:1px solid #ddd;
-      border-radius:0; padding:12px;
-      box-shadow:none; background:transparent;
+      border: none;
+      border-bottom: 1px solid #ddd;
+      border-radius: 0;
+      padding: 12px;
+      box-shadow: none;
+      background: transparent;
     }
-    .note h3 { font-size:16px; margin:0 0 4px; font-weight:bold; }
-    .note small { display:block; color:#888; margin-bottom:4px; }
+    .note h3 { font-size: 16px; margin: 0 0 4px; font-weight: bold; }
+    .note small { display: block; color: #888; margin-bottom: 4px; }
     .note p {
-      font-size:13px; color:#444;
-      overflow:hidden; white-space:nowrap;
-      text-overflow:ellipsis; margin:0;
+      font-size: 13px; color:#444; margin:0;
+      white-space:pre-wrap; /* ← 修正済み */
+      overflow:hidden; text-overflow:ellipsis;
     }
-  }
 
-  /* ===== モバイル新規ボタン ===== */
-  .fab {
-    position: fixed;
-    bottom: 16px; right: 16px;
-    width: 56px; height: 56px;
-    border-radius: 50%; border: none;
-    background: #2a3a50; color: #fff;
-    font-size: 28px; font-weight: bold;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    cursor: pointer; transition: background 0.3s;
-    z-index: 3000;
+    /* ===== モバイル新規ボタン ===== */
+    .fab {
+      position: fixed;
+      bottom: 16px; right: 16px;
+      width: 56px; height: 56px;
+      border-radius: 50%; border: none;
+      background: #2a3a50; color: #fff;
+      font-size: 28px; font-weight: bold;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      cursor: pointer; transition: background 0.3s;
+      z-index: 3000;
+    }
+    .fab:hover { background: #a90e2; }
   }
-  .fab:hover { background: #a90e2; }
 
   /* ===== はみ出し防止 ===== */
   .note, .mobile-editor, .editor-content,
@@ -230,6 +242,7 @@
     max-width: 100%;
   }
 </style>
+
 
 </head>
 <body class="light">
