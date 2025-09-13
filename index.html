@@ -4,7 +4,197 @@
 <meta charset="utf-8">
 <title>Notes</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+<style>
+  body { font-family:"Meiryo UI", sans-serif; margin:0; }
+  body.light { background:#f0f4f8; color:#2a3a50; }
+  body.dark  { background:#0f1115; color:#e8edf5; }
+
+  /* ===== サイドバーしまう ===== */
+  .sidebar-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.3);
+    z-index: 2400; /* サイドバー (2500) より下に */
+    display: none;
+    pointer-events: none; /* デフォルトではクリック無効 */
+  }
+  .sidebar-overlay.show {
+    display: block;
+    pointer-events: auto; /* show のときだけ有効化 */
+  }
+
+  /* ===== ヘッダー ===== */
+  .topbar {
+    background:#4a90e2; color:#fff;
+    padding:8px 12px; position:sticky; top:0; z-index:2000;
+  }
+  .topbar-inner { display:flex; justify-content:space-between; align-items:center; }
+  .topbar-title { font-weight:bold; }
+  .topbar-actions { display:flex; flex-wrap:nowrap; gap:4px; overflow-x:auto; }
+  .btn {
+    padding:4px 8px; cursor:pointer; border:none; border-radius:6px;
+    background:#ffffff; color:#2a3a50; font-size:12px; white-space:nowrap;
+    font-family:"Meiryo UI",sans-serif;
+  }
+  .btn:hover { opacity:.9; }
+  body.dark .btn { background:#2a3140; color:#e8edf5; }
+  .btn-primary { background:#4a90e2; color:#fff; }
+  .btn-danger  { background:#e24a4a; color:#fff; }
+  .btn-cancel  { background:#fff; border:1px solid #999; color:#333; }
+
+  /* ===== 情報＆検索 ===== */
+  #infoPanel { display:none; font-size:12px; margin:8px 16px; color:#556; }
+  #filterPanel { margin:8px 16px; }
+  #q {
+    width:300px;
+    max-width:60%;
+    padding:6px; border:1px solid #cfd8e3; border-radius:6px;
+    font-size:13px; font-family:"Meiryo UI",sans-serif;
+  }
+  #q::placeholder { color:#999; font-style:italic; }
+
+  /* ===== レイアウト ===== */
+  .container { display:flex; }
+  .sidebar {
+    width:200px; border-right:1px solid #d8e1eb; padding:14px;
+    background: linear-gradient(180deg,#ffffff,#f7f9fc);
+  }
+  body.dark .sidebar { background:#1c1f28; border-color:#2a3140; }
+  .sidebar h4 { margin:0 0 10px; font-size:13px; color:#6b7a90; }
+  .sidebar ul { list-style:none; padding:0; margin:0; }
+  .sidebar li {
+    cursor:pointer; margin:6px 0; padding:6px 8px; border-radius:6px;
+    display:flex; justify-content:space-between; align-items:center; font-size:13px;
+  }
+  .sidebar li.active { background:#4a90e2; color:#fff; }
+  .sidebar .del-btn, .sidebar .edit-btn {
+    font-size: 12px; margin-left:6px; cursor:pointer; opacity:0.6;
+  }
+  .sidebar .del-btn:hover { color:#e24a4a; opacity:1; }
+  .sidebar .edit-btn:hover { color:#4a90e2; opacity:1; }
+
+  .cat-input { display:flex; gap:4px; margin-top:8px; }
+  .cat-input input { flex:1; padding:4px; font-size:12px; font-family:"Meiryo UI",sans-serif; }
+  .cat-input button { flex:0 0 auto; padding:4px 6px; font-size:12px; }
+
+  .main { flex:1; padding:18px; }
+
+  /* ===== ノートカード ===== */
+  .note {
+    border:1px solid #e3e8ef; background:#fff; border-radius:10px;
+    padding:12px; margin-bottom:12px; cursor:pointer;
+    box-shadow:0 2px 6px rgba(0,0,0,.06);
+    font-size:13px; white-space:pre-wrap; word-wrap:break-word;
+    display:flex; flex-direction:column; gap:4px;
+    font-family:"Meiryo UI",sans-serif;
+  }
+  .note-header { display:flex; align-items:center; gap:6px; }
+  .note h3 { margin:0; font-size:15px; flex:1; }
+  .note small { color:#6b7a90; font-size:12px; }
+  body.dark .note { background:#141925; border-color:#2a3140; color:#e8edf5; box-shadow:0 2px 8px rgba(0,0,0,.25); }
+
+  /* ===== PC用モーダル ===== */
+  #dlg {
+    display:none; position:absolute;
+    width:600px; max-width:95%;
+    background:#fff; color:#2a3a50; border:1px solid #d0d7e2; border-radius:10px;
+    box-shadow:0 16px 32px rgba(0,0,0,.3); z-index:1000;
+    font-size:13px; font-family:"Meiryo UI",sans-serif;
+  }
+  body.dark #dlg { background:#141925; color:#e8edf5; border-color:#2a3140; }
+  #dlgHeader {
+    padding:10px 14px; background:#4a90e2; color:#fff; border-radius:10px 10px 0 0;
+    cursor:move; user-select:none; font-weight:bold;
+  }
+  #dlg .content { padding:20px; }
+  #dlg input, #dlg textarea, #dlg select {
+    display:block;
+    width:100%; max-width:100%;
+    margin-bottom:10px; padding:8px; border:1px solid #cfd8e3; border-radius:6px;
+    font-size:13px; font-family:"Meiryo UI",sans-serif; box-sizing:border-box;
+  }
+  .modal-footer { text-align:right; }
+
+ /* ===== モバイル用エディタ ===== */
+.mobile-editor {
+  position: fixed;
+  top: 0;
+  left: 100%;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  transition: left 0.3s ease;
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.mobile-editor.show {
+  left: 0;
+}
+
+/* ヘッダー（青帯） */
+.mobile-editor .editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #4a90e2;
+  color: #fff;
+  font-weight: bold;
+}
+
+.mobile-editor .editor-header button {
+  background: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+/* 本文エリア */
+.mobile-editor .editor-content {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+/* 入力欄（共通） */
+.mobile-editor .editor-content input,
+.mobile-editor .editor-content textarea,
+.mobile-editor .editor-content select {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 12px;
+  padding: 10px;
+  border: 1px solid #cfd8e3;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* 日付入力欄だけ特別処理（iOS Safariの独自スタイルを無効化） */
+.mobile-editor .editor-content input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #fff;
+  color: #333;
+}
+
+
+
+  /* ===== 検索ボックスの幅調整 ===== */
+  @media screen and (max-width:600px) {
+    #q {
+      width:100%;
+      max-width:100%;
+      display:block;
+      margin:0 auto;
     }
   }
 
