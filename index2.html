@@ -374,7 +374,7 @@
 <!-- ===== export設定用モーダル ===== -->
  <!-- ===== Export モーダル ===== -->
 <div id="exportDlg">
-  <div id="exportDlgHeader">エクスポート条件</div>
+  <div id="exportDlgHeader">エクスポート設定</div>
   <div class="content">
     <label>
       <input type="checkbox" id="expSelected"> チェック付きノートのみ
@@ -703,22 +703,20 @@ function closeMobileEditor(){
   mobileDirty = false;
 }
    
-// ===== 全選択 =====
-function toggleSelectAll(master){
-  if(master.checked){
-    const q = (document.getElementById('q').value||'').toLowerCase();
-    notes.forEach(n=>{
-      // 表示中（カテゴリ＋検索条件）のみ対象
-      if((currentCategory==="all" || n.cat===currentCategory) &&
-         ((!q) || (n.title||"").toLowerCase().includes(q) || (n.notes||"").toLowerCase().includes(q))){
-        selectedIds.add(n.id);
-      }
-    });
-  } else {
-    selectedIds.clear();
-  }
-  render();
+// ===== 全選択処理 =====
+function toggleSelectAll() {
+  const master = document.getElementById("selectAll");
+  const list = document.querySelectorAll("#list .note input[type='checkbox']");
+  selectedIds.clear();
+  list.forEach(chk => {
+    chk.checked = master.checked;
+    const noteId = chk.closest(".note").__noteId;
+    if (master.checked) {
+      selectedIds.add(noteId);
+    }
+  });
 }
+
 
 // ===== 選択したものをexport =====   
 /* ===== Export モーダル ===== */
@@ -764,6 +762,30 @@ function doExport(){
   closeExportDialog();
 }
 
+// ===== エクスポートモーダルドラッグ =====
+(function(){
+  var dlg = document.getElementById("exportDlg"),
+      header = document.getElementById("exportDlgHeader");
+  if (!dlg || !header) return;
+
+  var startX=0, startY=0, startLeft=0, startTop=0, dragging=false;
+  header.onmousedown=function(e){
+    dragging=true;
+    startX=e.clientX; startY=e.clientY;
+    startLeft=dlg.offsetLeft; startTop=dlg.offsetTop;
+    document.onmousemove=function(e2){
+      if(!dragging)return;
+      var dx=e2.clientX-startX, dy=e2.clientY-startY;
+      dlg.style.left=(startLeft+dx)+"px";
+      dlg.style.top=(startTop+dy)+"px";
+    };
+    document.onmouseup=function(){
+      dragging=false;
+      document.onmousemove=null;
+      document.onmouseup=null;
+    };
+  };
+})();
 
   
 </script>
