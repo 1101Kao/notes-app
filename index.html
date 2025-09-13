@@ -274,7 +274,7 @@ input, textarea, select {
 <div class="mobile-editor" id="mobileEditor">
   <div class="editor-header">
     <span>ノート編集</span>
-    <button onclick="closeMobileEditor()">閉じる</button>
+   <button onclick="saveNote(); closeMobileEditor()">閉じる</button>
   </div>
   <div class="editor-content">
     <input type="date" id="mDate">
@@ -456,15 +456,6 @@ init();
   };
   window.onresize=function(){ if(dlg.style.display==='block' && !dragging){ centerDialog(); } };
 })();
-
-function debugCheck() {
-  var el = document.getElementById("mobileEditor");
-  if (!el) {
-    alert("mobileEditor が見つからない");
-  } else {
-    alert("class: " + el.className);
-  }
-}
 
 // モバイル新規作成時は横幅100%のエディタを使う
 function openMobileEditor(){
