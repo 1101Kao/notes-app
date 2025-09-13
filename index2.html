@@ -119,16 +119,31 @@
   /* ===== export設定用モーダル ===== */
  #exportDlg {
   display:none;
-  position:fixed;
-  top:50%; left:50%;
-  transform:translate(-50%,-50%);
-  background:#fff;
-  border:1px solid #ccc;
-  border-radius:10px;
-  padding:20px;
-  z-index:4000;
-  box-shadow:0 8px 20px rgba(0,0,0,.3);
+  position:absolute;
+  width:400px; max-width:90%;
+  background:#fff; color:#2a3a50;
+  border:1px solid #d0d7e2; border-radius:10px;
+  box-shadow:0 16px 32px rgba(0,0,0,.3);
+  z-index:1500;
+  font-size:13px; font-family:"Meiryo UI",sans-serif;
 }
+
+#exportDlgHeader {
+  padding:10px 14px;
+  background:#4a90e2; color:#fff;
+  border-radius:10px 10px 0 0;
+  font-weight:bold;
+}
+
+#exportDlg .content {
+  padding:16px;
+}
+
+#exportDlg .modal-footer {
+  text-align:right;
+  margin-top:10px;
+}
+
 
 
 
@@ -340,18 +355,23 @@
   </div>
 </div>
 <!-- ===== export設定用モーダル ===== -->
-  <div id="exportDlg" class="export-dlg">
+ <!-- ===== Export モーダル ===== -->
+<div id="exportDlg">
+  <div id="exportDlgHeader">エクスポート条件</div>
   <div class="content">
-    <h3>エクスポート条件</h3>
-    <label>開始日 <input type="date" id="expStart"></label><br>
-    <label>終了日 <input type="date" id="expEnd"></label><br>
-    <label><input type="checkbox" id="expSelected"> チェックしたノートのみ</label>
+    <label>
+      <input type="checkbox" id="expSelected"> チェック付きノートのみ
+    </label>
+    <br><br>
+    <label>開始日: <input type="date" id="expStart"></label><br>
+    <label>終了日: <input type="date" id="expEnd"></label>
     <div class="modal-footer">
       <button class="btn btn-cancel" onclick="closeExportDialog()">キャンセル</button>
       <button class="btn btn-primary" onclick="doExport()">エクスポート</button>
     </div>
   </div>
 </div>
+
 
 
   
