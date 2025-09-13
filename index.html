@@ -130,8 +130,12 @@
   flex-direction: column;
   box-sizing: border-box;
 }
-.mobile-editor.show { left: 0; }
 
+.mobile-editor.show {
+  left: 0;
+}
+
+/* ヘッダー（青帯） */
 .mobile-editor .editor-header {
   display: flex;
   justify-content: space-between;
@@ -141,12 +145,16 @@
   color: #fff;
   font-weight: bold;
 }
+
 .mobile-editor .editor-header button {
   background: #fff;
   border: none;
   border-radius: 4px;
   padding: 4px 8px;
+  cursor: pointer;
 }
+
+/* 本文エリア */
 .mobile-editor .editor-content {
   flex: 1;
   padding: 16px;
@@ -154,12 +162,14 @@
   background: #fff;
   box-sizing: border-box;
 }
+
+/* 入力欄（共通） */
 .mobile-editor .editor-content input,
 .mobile-editor .editor-content textarea,
 .mobile-editor .editor-content select {
-  display:block;
+  display: block;
   width: 100%;
-  max-width:100%;
+  max-width: 100%;
   margin-bottom: 12px;
   padding: 10px;
   border: 1px solid #cfd8e3;
@@ -168,10 +178,14 @@
   box-sizing: border-box;
 }
 
-/* 日付入力欄も幅100%に強制 */
+/* 日付入力欄だけ特別処理（iOS Safariの独自スタイルを無効化） */
 .mobile-editor .editor-content input[type="date"] {
-  width: 100% !important;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #fff;
+  color: #333;
 }
+
 
 
   /* ===== 検索ボックスの幅調整 ===== */
