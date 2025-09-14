@@ -469,14 +469,15 @@ function render(){
   pin.onclick=function(e){e.stopPropagation();n.pinned=!n.pinned;saveNotes();render();};
   header.appendChild(pin);
 
-  // タイトル（クリックで選択）
-  var title=document.createElement('h3');
-  title.textContent=n.title||"(無題)";
-  title.onclick=function(e){
-    e.stopPropagation();
-    chk.checked = !chk.checked;
-    toggleSelect(n.id, chk);
-  };
+ // タイトル（クリックで選択）
+var title=document.createElement('h3');
+title.textContent=n.title||"(無題)";
+title.onclick=function(e){
+  e.stopPropagation();
+  chk.click(); // ← これでOK
+};
+header.appendChild(title);
+
   header.appendChild(title);
   div.appendChild(header);
 
