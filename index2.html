@@ -428,6 +428,16 @@ function saveCategories(){storageSet("categories",JSON.stringify(categories));}
 
 /* ===== レンダリング ===== */
 function render(){
+  function render(){
+  // レンダリング開始時に全選択リセット
+  const master = document.getElementById("selectAll");
+  if(master) master.checked = false;
+
+  var list=document.getElementById('list');
+  list.innerHTML='';
+  ...
+}
+
   var list=document.getElementById('list');list.innerHTML='';
   var q=(document.getElementById('q').value||'').toLowerCase();
 
@@ -447,7 +457,12 @@ function render(){
     var header=document.createElement('div');header.className='note-header';
 
     var chk=document.createElement('input');chk.type='checkbox';chk.checked=selectedIds.has(n.id);
-    chk.onchange=function(e){toggleSelect(n.id,chk);e.stopPropagation();};
+    chk.onchange = function(e){
+  toggleSelect(n.id, chk);
+  e.stopPropagation();
+};
+div.__noteId = n.id;  // ★追加
+
     header.appendChild(chk);
 
     var pin=document.createElement('span');
@@ -495,7 +510,14 @@ function toggleCats(){
 }
 
 /* ===== カテゴリ操作 ===== */
-function setCategory(cat){currentCategory=cat;render();}
+function setCategory(cat){
+  currentCategory = cat;
+  selectedIds.clear();                  // ← 選択解除
+  const master = document.getElementById("selectAll");
+  if(master) master.checked = false;    // ← 全選択チェックも外す
+  render();
+}
+
 function addCategory(){
   var v=document.getElementById("newCat").value.trim();
   if(!v)return;
