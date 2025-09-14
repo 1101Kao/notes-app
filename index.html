@@ -443,40 +443,68 @@ function render(){
   });
 
   sorted.forEach(n=>{
-    if(currentCategory!=="all"&&n.cat!==currentCategory)return;
-    var t=(n.title||"").toLowerCase(),body=(n.notes||"").toLowerCase();
-    if(q&&t.indexOf(q)===-1&&body.indexOf(q)===-1)return;
+  if(currentCategory!=="all"&&n.cat!==currentCategory)return;
+  var t=(n.title||"").toLowerCase(),body=(n.notes||"").toLowerCase();
+  if(q&&t.indexOf(q)===-1&&body.indexOf(q)===-1)return;
 
-    var div=document.createElement('div');div.className='note';
-    var header=document.createElement('div');header.className='note-header';
+  var div=document.createElement('div');div.className='note';
+  div.__noteId = n.id; // IDを保持
 
-    var chk=document.createElement('input');chk.type='checkbox';chk.checked=selectedIds.has(n.id);
-    chk.onchange = function(e){
-  toggleSelect(n.id, chk);
-  e.stopPropagation();
-};
-div.__noteId = n.id;  // ★追加
+  var header=document.createElement('div');header.className='note-header';
 
-    header.appendChild(chk);
+  // チェックボックス
+  var chk=document.createElement('input');
+  chk.type='checkbox';
+  chk.checked=selectedIds.has(n.id);
+  chk.onchange = function(e){
+    toggleSelect(n.id, chk);
+    e.stopPropagation();
+  };
+  header.appendChild(chk);
 
-    var pin=document.createElement('span');
-    pin.textContent=n.pinned?"★":"☆";
-    pin.style.cursor="pointer";pin.style.color=n.pinned?"#f39c12":"#aaa";
-    pin.onclick=function(e){e.stopPropagation();n.pinned=!n.pinned;saveNotes();render();};
-    header.appendChild(pin);
+  // ピン
+  var pin=document.createElement('span');
+  pin.textContent=n.pinned?"★":"☆";
+  pin.style.cursor="pointer";pin.style.color=n.pinned?"#f39c12":"#aaa";
+  pin.onclick=function(e){e.stopPropagation();n.pinned=!n.pinned;saveNotes();render();};
+  header.appendChild(pin);
 
-    var title=document.createElement('h3');title.textContent=n.title||"(無題)";
-    header.appendChild(title);div.appendChild(header);
+  // タイトル（クリックで選択）
+  var title=document.createElement('h3');
+  title.textContent=n.title||"(無題)";
+  title.onclick=function(e){
+    e.stopPropagation();
+    chk.checked = !chk.checked;
+    toggleSelect(n.id, chk);
+  };
+  header.appendChild(title);
+  div.appendChild(header);
 
-    var meta=document.createElement('small');meta.textContent=n.date+"（"+n.cat+"）";div.appendChild(meta);
-    var p=document.createElement('p');p.textContent=n.notes||"";div.appendChild(p);
+  // メタ・本文
+  var meta=document.createElement('small');meta.textContent=n.date+"（"+n.cat+"）";div.appendChild(meta);
 
-    div.ondblclick=function(){openEditorById(n.id);};
-    div.onclick=function(e){if(e.target.tagName!=="INPUT"&&e.target!==pin){toggleSelect(n.id,chk);chk.checked=selectedIds.has(n.id);}};
-    list.appendChild(div);
-  });
+  var p=document.createElement('p');
+  p.textContent=n.notes||"";
+  // 本文クリック → 編集
+  p.onclick=function(e){
+    e.stopPropagation();
+    openEditorById(n.id);
+  };
+  div.appendChild(p);
+
+  // 余白クリック → 編集
+  div.onclick=function(e){
+    if(e.target===div){ // note全体の余白を直接クリックしたとき
+      openEditorById(n.id);
+    }
+  };
+
+  list.appendChild(div);
+});
   renderCategories();
+  updateMasterCheckbox(); // ← 最後に同期
 }
+
 function renderCategories(){
   categories.sort((a,b)=>a.localeCompare(b,"ja"));
   var list=document.getElementById("catList");list.innerHTML="";
@@ -719,7 +747,7 @@ function closeMobileEditor(){
   mobileDirty = false;
 }
    
-// ===== 全選択処理 =====
+/* ===== 全選択処理 ===== */
 function toggleSelectAll() {
   const master = document.getElementById("selectAll");
   const list = document.querySelectorAll("#list .note input[type='checkbox']");
@@ -733,6 +761,13 @@ function toggleSelectAll() {
   });
 }
 
+/* ===== masterチェック更新 ===== */
+function updateMasterCheckbox(){
+  const master = document.getElementById("selectAll");
+  if(!master) return;
+  const boxes = document.querySelectorAll("#list .note input[type='checkbox']");
+  master.checked = boxes.length > 0 && [...boxes].every(b => b.checked);
+}
 
 // ===== 選択したものをexport =====   
 /* ===== Export モーダル ===== */
