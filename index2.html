@@ -428,15 +428,9 @@ function saveCategories(){storageSet("categories",JSON.stringify(categories));}
 
 /* ===== レンダリング ===== */
 function render(){
-  function render(){
   // レンダリング開始時に全選択リセット
   const master = document.getElementById("selectAll");
   if(master) master.checked = false;
-
-  var list=document.getElementById('list');
-  list.innerHTML='';
-  ...
-}
 
   var list=document.getElementById('list');list.innerHTML='';
   var q=(document.getElementById('q').value||'').toLowerCase();
