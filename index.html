@@ -773,8 +773,19 @@ function updateMasterCheckbox(){
 // ===== 選択したものをexport =====   
 /* ===== Export モーダル ===== */
 function openExportDialog(){
-  document.getElementById("exportDlg").style.display = "block";
+  const dlg = document.getElementById("exportDlg");
+
+  // 幅と高さを取得
+  const dw = dlg.offsetWidth || 400;
+  const w  = document.documentElement.clientWidth;
+  const left = Math.max(10, Math.floor((w - dw) / 2));
+  const top  = (document.documentElement.scrollTop || document.body.scrollTop) + 80;
+
+  dlg.style.left = left + "px";
+  dlg.style.top  = top + "px";
+  dlg.style.display = "block";
 }
+
 function closeExportDialog(){
   document.getElementById("exportDlg").style.display = "none";
 }
